@@ -1,0 +1,40 @@
+# Wails build output
+build/bin/
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/package.json.md5
+frontend/.vite/
+*.tsbuildinfo
+
+# Go
+*.exe
+*.exe~
+*.test
+*.out
+coverage.*
+vendor/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+
+# Editors / IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!frontend/.vscode/extensions.json
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code local settings
+.claude/settings.local.json
