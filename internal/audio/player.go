@@ -67,6 +67,8 @@ func NewPlayer(lookup func(id string) (string, bool), cb Callbacks) (*Player, er
 func (p *Player) loop() {
 	tick := time.NewTicker(250 * time.Millisecond)
 	defer tick.Stop()
+	report := time.NewTicker(30 * time.Second)
+	defer report.Stop()
 	for {
 		select {
 		case ev := <-p.eng.Events:
@@ -89,7 +91,20 @@ func (p *Player) loop() {
 			if p.cb.Progress != nil {
 				p.cb.Progress(p.State())
 			}
+		case <-report.C:
+			p.logStats()
 		}
+	}
+}
+
+// logStats reports processing trouble from the last period, if any.
+func (p *Player) logStats() {
+	var s streamStats
+	p.locked(func(e *Engine) { s, e.stats = e.stats, streamStats{} })
+	starved := externalStarved.Swap(0)
+	if s.slow > 0 || starved > 0 {
+		log.Printf("audio: %d slow blocks (worst %v for %v of audio), external decoder late %d times",
+			s.slow, s.worst.Round(time.Millisecond), s.budget.Round(time.Millisecond), starved)
 	}
 }
 

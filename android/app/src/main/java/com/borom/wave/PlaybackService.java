@@ -19,6 +19,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -66,6 +68,15 @@ public class PlaybackService extends Service implements WaveCore.Sink {
     /** Paused by a transient focus loss (call, assistant): resume when focus comes back. */
     private boolean resumeOnFocus;
 
+    /** Keeps the CPU running with the screen off, so the Go engine is served in time. */
+    private PowerManager.WakeLock wakeLock;
+
+    // Last state given to the media session; the system extrapolates the position from it.
+    private String stateTrack = "";
+    private long statePosition, stateTime;
+    private float stateSpeed;
+    private boolean statePaused = true;
+
     private final BroadcastReceiver noisy = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c, Intent i) {
@@ -102,6 +113,9 @@ public class PlaybackService extends Service implements WaveCore.Sink {
         NotificationChannel ch = new NotificationChannel(CHANNEL, getString(R.string.playback_channel), NotificationManager.IMPORTANCE_LOW);
         ch.setShowBadge(false);
         nm.createNotificationChannel(ch);
+
+        wakeLock = getSystemService(PowerManager.class).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wave:playback");
+        wakeLock.setReferenceCounted(false);
 
         audio = getSystemService(AudioManager.class);
         focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
@@ -150,6 +164,7 @@ public class PlaybackService extends Service implements WaveCore.Sink {
         WaveCore.save();
         if (noisyRegistered) unregisterReceiver(noisy);
         audio.abandonAudioFocusRequest(focusRequest);
+        if (wakeLock.isHeld()) wakeLock.release();
         session.release();
         covers.shutdown();
         super.onDestroy();
@@ -227,15 +242,23 @@ public class PlaybackService extends Service implements WaveCore.Sink {
         boolean nowHasTrack = s.optBoolean("hasTrack");
         long position = (long) (s.optDouble("position") * 1000);
         float speed = (float) s.optDouble("speed", 1);
+        String track = s.optString("trackId");
 
-        session.setPlaybackState(new PlaybackStateCompat.Builder()
-            .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE
-                | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_STOP
-                | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                | PlaybackStateCompat.ACTION_SEEK_TO)
-            .setState(nowPaused ? PlaybackStateCompat.STATE_PAUSED : PlaybackStateCompat.STATE_PLAYING,
-                position, nowPaused ? 0 : speed)
-            .build());
+        if (needsStateUpdate(track, nowPaused, position, speed)) {
+            stateTrack = track;
+            statePaused = nowPaused;
+            statePosition = position;
+            stateSpeed = speed;
+            stateTime = SystemClock.elapsedRealtime();
+            session.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE
+                    | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_STOP
+                    | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                    | PlaybackStateCompat.ACTION_SEEK_TO)
+                .setState(nowPaused ? PlaybackStateCompat.STATE_PAUSED : PlaybackStateCompat.STATE_PLAYING,
+                    position, nowPaused ? 0 : speed)
+                .build());
+        }
 
         if (nowPaused == paused && nowHasTrack == hasTrack) return;
         paused = nowPaused;
@@ -245,7 +268,19 @@ public class PlaybackService extends Service implements WaveCore.Sink {
         updateNotification();
     }
 
+    /**
+     * Progress comes 4 times a second; republishing it each time makes the system UI
+     * (lock screen, Samsung Now Bar) redraw as often. Only changes it can't predict are sent.
+     */
+    private boolean needsStateUpdate(String track, boolean nowPaused, long position, float speed) {
+        if (!track.equals(stateTrack) || nowPaused != statePaused || speed != stateSpeed) return true;
+        long expected = statePaused ? statePosition
+            : statePosition + (long) ((SystemClock.elapsedRealtime() - stateTime) * stateSpeed);
+        return Math.abs(position - expected) > 1500;
+    }
+
     private void onPlaying() {
+        wakeLock.acquire();
         audio.requestAudioFocus(focusRequest);
         if (!noisyRegistered) {
             ContextCompat.registerReceiver(this, noisy,
@@ -255,6 +290,7 @@ public class PlaybackService extends Service implements WaveCore.Sink {
     }
 
     private void onPaused() {
+        if (wakeLock.isHeld()) wakeLock.release();
         if (noisyRegistered) {
             unregisterReceiver(noisy);
             noisyRegistered = false;

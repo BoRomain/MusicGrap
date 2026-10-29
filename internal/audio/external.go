@@ -3,6 +3,7 @@ package audio
 import (
 	"encoding/binary"
 	"sync"
+	"sync/atomic"
 
 	"github.com/gopxl/beep/v2"
 )
@@ -65,6 +66,10 @@ type chunk struct {
 	b   []byte
 	err error
 }
+
+// externalStarved counts reads that found the read-ahead buffer empty, i.e. the
+// decoder fell behind playback.
+var externalStarved atomic.Int64
 
 // pcmStreamer adapts a PCMSource to beep.StreamSeekCloser. The source is read
 // ahead by a goroutine, so slow or bursty decoding (JNI, MediaCodec, a pipe)
@@ -131,6 +136,9 @@ func (p *pcmStreamer) Stream(samples [][2]float64) (int, bool) {
 	n := 0
 	for n < len(samples) {
 		if len(p.buf) < bytesPerFrame {
+			if len(p.chunks) == 0 && p.pos > 0 {
+				externalStarved.Add(1)
+			}
 			c, ok := <-p.chunks
 			if !ok {
 				break

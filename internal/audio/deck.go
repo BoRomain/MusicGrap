@@ -79,8 +79,10 @@ func (d *Deck) seek(sec float64) error {
 	return nil
 }
 
+// close releases the source in the background: it is called from the audio
+// callback, and releasing a platform decoder or killing ffmpeg can take tens of ms.
 func (d *Deck) close() {
 	if d != nil {
-		d.src.Close()
+		go d.src.Close()
 	}
 }

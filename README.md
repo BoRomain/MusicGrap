@@ -70,6 +70,8 @@ Build (Windows, PowerShell) :
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
+Sur Samsung, si le son saccade écran éteint : Paramètres > Applications > Wave > Batterie > **Non restreinte**.
+
 Le script enchaîne `gomobile bind ./mobile`, `npm run build:android` (le front utilise alors le pont Capacitor au lieu de Wails), `npx cap sync android` et Gradle.
 
 ## Architecture

@@ -39,7 +39,11 @@ public class WavePlugin extends Plugin {
     private static final String STORAGE_AUTHORITY = "com.android.externalstorage.documents";
 
     private final ExecutorService calls = Executors.newSingleThreadExecutor();
+    /** False while the app is in the background: the hidden page doesn't need progress ticks. */
+    private volatile boolean visible = true;
     private final WaveCore.Sink sink = (name, payload) -> {
+        // The next tick (within 250 ms) refreshes the page when it comes back.
+        if (!visible && name.equals("playback:progress")) return;
         JSObject e = new JSObject();
         e.put("name", name);
         e.put("payload", payload);
@@ -52,6 +56,12 @@ public class WavePlugin extends Plugin {
         WaveCore.addSink(sink);
         getContext().startService(new Intent(getContext(), PlaybackService.class));
     }
+
+    @Override
+    protected void handleOnPause() { visible = false; }
+
+    @Override
+    protected void handleOnResume() { visible = true; }
 
     @Override
     protected void handleOnDestroy() {

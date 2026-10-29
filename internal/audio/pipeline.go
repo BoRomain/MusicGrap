@@ -2,6 +2,7 @@ package audio
 
 import (
 	"math"
+	"time"
 
 	"github.com/gopxl/beep/v2"
 )
@@ -53,6 +54,25 @@ type Engine struct {
 
 	bufA   [][2]float64
 	Events chan Event
+
+	stats streamStats
+}
+
+// streamStats counts blocks whose processing took more than half of the audio
+// they produce: a sign the CPU can't keep up, which ends in dropouts.
+type streamStats struct {
+	slow          int
+	worst, budget time.Duration // slowest block and its audio duration
+}
+
+func (s *streamStats) add(took, budget time.Duration) {
+	if took*2 <= budget {
+		return
+	}
+	s.slow++
+	if took > s.worst {
+		s.worst, s.budget = took, budget
+	}
 }
 
 func NewEngine() *Engine {
@@ -78,6 +98,8 @@ func (e *Engine) Stream(out [][2]float64) (int, bool) {
 		clear(out)
 		return len(out), true
 	}
+	start := time.Now()
+	defer func() { e.stats.add(time.Since(start), SampleRate.D(len(out))) }()
 	e.fill(out)
 	e.EQ.Process(out)
 	e.Reverb.Process(out)
