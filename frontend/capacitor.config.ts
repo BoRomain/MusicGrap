@@ -4,6 +4,8 @@ const config: CapacitorConfig = {
   appId: 'com.borom.wave',
   appName: 'Wave',
   webDir: 'dist',
+  // The bridge would otherwise log every call and event (4 progress events a second).
+  loggingBehavior: 'none',
   android: {
     path: '../android',
     // Covers come from the Go core's HTTP server on 127.0.0.1 while the page is https://localhost.

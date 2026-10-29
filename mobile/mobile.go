@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	"musicplayer/internal/audio"
 	"musicplayer/internal/core"
@@ -63,6 +64,8 @@ func Start(dataDir string, l Listener) error {
 		return nil
 	}
 	settings.SetDir(dataDir)
+	// Phones get preempted more (WebView, GC, power saving): trade latency for no dropouts.
+	audio.OutputBuffer = 300 * time.Millisecond
 
 	// Covers are served over local HTTP so <img> tags can load them like on desktop.
 	ln, err := net.Listen("tcp", "127.0.0.1:0")

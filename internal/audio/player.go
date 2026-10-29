@@ -49,9 +49,13 @@ type Player struct {
 	preloadMu sync.Mutex
 }
 
+// OutputBuffer is the audio output buffer. Larger means fewer dropouts under
+// load but slower reaction to pause and seek. Set it before NewPlayer.
+var OutputBuffer = 100 * time.Millisecond
+
 // NewPlayer opens the audio device and starts the playback goroutine.
 func NewPlayer(lookup func(id string) (string, bool), cb Callbacks) (*Player, error) {
-	if err := speaker.Init(SampleRate, SampleRate.N(100*time.Millisecond)); err != nil {
+	if err := speaker.Init(SampleRate, SampleRate.N(OutputBuffer)); err != nil {
 		return nil, err
 	}
 	p := &Player{eng: NewEngine(), lookup: lookup, cb: cb, queue: queue.New()}

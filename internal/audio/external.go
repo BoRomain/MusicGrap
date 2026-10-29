@@ -55,34 +55,91 @@ func Supported(ext string) bool {
 
 const bytesPerFrame = 4 // 2 channels × int16
 
-// pcmStreamer adapts a PCMSource to beep.StreamSeekCloser.
+const (
+	readAheadFrames = 4096 // frames per read from the source
+	readAheadChunks = 24   // chunks buffered ahead, about 2 s at 48 kHz
+)
+
+// chunk is one read from the source; err ends the stream.
+type chunk struct {
+	b   []byte
+	err error
+}
+
+// pcmStreamer adapts a PCMSource to beep.StreamSeekCloser. The source is read
+// ahead by a goroutine, so slow or bursty decoding (JNI, MediaCodec, a pipe)
+// never stalls the audio thread as long as the decoder keeps up on average.
 type pcmStreamer struct {
 	src PCMSource
 	len int
 	pos int
 	buf []byte // decoded bytes not consumed yet
 	err error
+
+	// Reader goroutine, started on the first Stream after creation or a Seek.
+	chunks chan chunk // closed by the reader at the end of the stream
+	stop   chan struct{}
+	done   chan struct{}
 }
 
 func newPCMStreamer(src PCMSource) *pcmStreamer {
 	return &pcmStreamer{src: src, len: int(src.Frames())}
 }
 
+func (p *pcmStreamer) startReader() {
+	chunks := make(chan chunk, readAheadChunks)
+	stop := make(chan struct{})
+	done := make(chan struct{})
+	p.chunks, p.stop, p.done = chunks, stop, done
+	go func() {
+		defer close(done)
+		defer close(chunks)
+		for {
+			b, err := p.src.Read(readAheadFrames)
+			if err == nil && len(b) < bytesPerFrame {
+				return // end of stream
+			}
+			select {
+			case chunks <- chunk{b, err}:
+			case <-stop:
+				return
+			}
+			if err != nil {
+				return
+			}
+		}
+	}()
+}
+
+// stopReader ends the reader goroutine and waits for it, so the source is free.
+func (p *pcmStreamer) stopReader() {
+	if p.chunks == nil {
+		return
+	}
+	close(p.stop)
+	<-p.done
+	p.chunks, p.stop, p.done = nil, nil, nil
+}
+
 func (p *pcmStreamer) Stream(samples [][2]float64) (int, bool) {
 	if p.err != nil {
 		return 0, false
 	}
+	if p.chunks == nil {
+		p.startReader()
+	}
 	n := 0
 	for n < len(samples) {
 		if len(p.buf) < bytesPerFrame {
-			b, err := p.src.Read(len(samples) - n)
-			if err != nil {
-				p.err = err
-			}
-			if len(b) < bytesPerFrame {
+			c, ok := <-p.chunks
+			if !ok {
 				break
 			}
-			p.buf = b
+			if c.err != nil {
+				p.err = c.err
+				break
+			}
+			p.buf = c.b
 		}
 		for n < len(samples) && len(p.buf) >= bytesPerFrame {
 			l := int16(binary.LittleEndian.Uint16(p.buf[0:]))
@@ -101,6 +158,7 @@ func (p *pcmStreamer) Len() int      { return p.len }
 func (p *pcmStreamer) Position() int { return p.pos }
 
 func (p *pcmStreamer) Seek(frame int) error {
+	p.stopReader()
 	if err := p.src.SeekFrame(int64(frame)); err != nil {
 		return err
 	}
@@ -109,6 +167,7 @@ func (p *pcmStreamer) Seek(frame int) error {
 }
 
 func (p *pcmStreamer) Close() error {
+	p.stopReader()
 	p.src.Close()
 	return nil
 }

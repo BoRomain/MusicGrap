@@ -64,6 +64,30 @@ func TestPCMStreamer(t *testing.T) {
 	}
 }
 
+func TestPCMStreamerSeekWhileReading(t *testing.T) {
+	src := &rampSource{frames: 100000, chunk: 512}
+	s := newPCMStreamer(src)
+	buf := make([][2]float64, 100)
+	s.Stream(buf) // reader goroutine now running ahead
+	if err := s.Seek(50000); err != nil {
+		t.Fatal(err)
+	}
+	s.Stream(buf)
+	target := int64(50000) // the ramp wraps around int16
+	if want := float64(int16(target)) / 32768; buf[0][0] != want {
+		t.Fatalf("after seek: first = %v, want %v", buf[0][0], want)
+	}
+	s.Close()
+}
+
+func TestPCMStreamerCloseUnread(t *testing.T) {
+	src := &rampSource{frames: 10, chunk: 10}
+	newPCMStreamer(src).Close()
+	if !src.closed {
+		t.Error("source not closed")
+	}
+}
+
 type fakeDecoder struct{ opened string }
 
 func (f *fakeDecoder) Open(path string) (PCMSource, error) {

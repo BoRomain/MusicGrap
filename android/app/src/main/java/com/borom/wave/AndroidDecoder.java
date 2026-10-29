@@ -18,7 +18,8 @@ import java.util.Arrays;
  * PCM from it, so EQ, speed, reverb and crossfade apply as for other formats.
  */
 final class AndroidDecoder implements Decoder {
-    private static final long TIMEOUT_US = 10_000;
+    /** Output wait per loop; short since all available inputs are queued first. */
+    private static final long TIMEOUT_US = 2_000;
 
     @Override
     public double duration(String path) throws Exception {
@@ -136,7 +137,8 @@ final class AndroidDecoder implements Decoder {
         /** Decodes until a block of output is ready; null at the end of the stream. */
         private byte[] decodeChunk() {
             while (!outputDone) {
-                if (!inputDone) feedInput();
+                // Keep the codec's input full, or it idles while we wait for output.
+                while (!inputDone && feedInput()) {}
                 int o = codec.dequeueOutputBuffer(info, TIMEOUT_US);
                 if (o == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     readOutputFormat(codec.getOutputFormat());
@@ -161,9 +163,10 @@ final class AndroidDecoder implements Decoder {
             return null;
         }
 
-        private void feedInput() {
-            int i = codec.dequeueInputBuffer(TIMEOUT_US);
-            if (i < 0) return;
+        /** Queues one input buffer; false when none is free right now. */
+        private boolean feedInput() {
+            int i = codec.dequeueInputBuffer(0);
+            if (i < 0) return false;
             ByteBuffer b = codec.getInputBuffer(i);
             int n = b == null ? -1 : ex.readSampleData(b, 0);
             if (n < 0) {
@@ -173,6 +176,7 @@ final class AndroidDecoder implements Decoder {
                 codec.queueInputBuffer(i, 0, n, ex.getSampleTime(), 0);
                 ex.advance();
             }
+            return true;
         }
 
         private void readOutputFormat(MediaFormat f) {
