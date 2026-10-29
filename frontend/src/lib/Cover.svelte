@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { coverUrl } from '$backend'
   import Icon from './Icon.svelte'
 
   /**
-   * Artwork of a track (served by the Go side at /cover/{id}), with a placeholder when there is none.
+   * Artwork of a track (served by the Go side, see coverUrl), with a placeholder when there is none.
    * With 4 ids or more, shows a 2×2 mosaic, like Spotify playlists.
    */
   let { ids, icon = 'note', round = false }: { ids: string[]; icon?: string; round?: boolean } = $props()
@@ -16,7 +17,7 @@
     {#if failed[id]}
       <div class="placeholder"><Icon name={icon} size={tiles.length === 4 ? 20 : 40} /></div>
     {:else}
-      <img src="/cover/{id}" alt="" loading="lazy" draggable="false" onerror={() => (failed[id] = true)} />
+      <img src={coverUrl(id)} alt="" loading="lazy" draggable="false" onerror={() => (failed[id] = true)} />
     {/if}
   {:else}
     <div class="placeholder"><Icon name={icon} size={40} /></div>

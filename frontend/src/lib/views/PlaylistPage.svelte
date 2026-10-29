@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DeletePlaylist, RenamePlaylist } from '../../../wailsjs/go/main/App'
+  import { DeletePlaylist, RenamePlaylist } from '$backend'
   import { app, back, coverIds, fmtLong, lib, playTracks, plural, shufflePlay } from '../store.svelte'
   import Icon from '../Icon.svelte'
   import MediaHeader from '../MediaHeader.svelte'

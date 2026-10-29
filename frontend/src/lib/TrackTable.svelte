@@ -29,6 +29,8 @@
   type SortKey = 'title' | 'artist' | 'album' | 'duration'
   let sort = $state<{ key: SortKey; desc: boolean } | null>(null)
   let selected = $state('')
+  // Touch screens (Android): one tap plays, as there is no hover or double click.
+  const touch = matchMedia('(hover: none)').matches
 
   const collator = new Intl.Collator('fr', { sensitivity: 'base', numeric: true })
 
@@ -112,7 +114,7 @@
       class:selected={selected === t.id}
       role="row"
       tabindex="0"
-      onclick={() => (selected = t.id)}
+      onclick={() => (touch ? play(k) : (selected = t.id))}
       ondblclick={() => play(k)}
       onkeydown={(e) => e.key === 'Enter' && play(k)}
       oncontextmenu={(e) => openMenu(e, k)}
@@ -152,18 +154,6 @@
 <style>
   .table { --cols: 44px minmax(0, 5fr) minmax(0, 3fr) 90px; }
   .table.noalbum { --cols: 44px minmax(0, 1fr) 90px; }
-  /* The album column goes first, then the numbers. */
-  @media (max-width: 700px) {
-    .table, .table.noalbum { --cols: 36px minmax(0, 1fr) 76px; }
-    .album, .th.col-album { display: none; }
-    .head, .row { gap: 8px; padding: 0 8px; }
-  }
-  @media (max-width: 480px) {
-    .table, .table.noalbum { --cols: minmax(0, 1fr) 64px; }
-    .num { display: none; }
-    .thumb { width: 36px; }
-    .dur { gap: 4px; }
-  }
   .head, .row {
     display: grid;
     grid-template-columns: var(--cols);
@@ -220,7 +210,16 @@
   .thumb :global(.cover) { border-radius: 4px; box-shadow: none; }
   .names { display: flex; flex-direction: column; min-width: 0; }
   .title, .sub, .album { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .title { font-size: 15px; }
+  /* Long titles wrap on up to 2 lines, then end with an ellipsis. */
+  .title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+  }
   .current .title, .current .n { color: var(--accent); }
   .sub, .album { font-size: 13px; color: var(--text-dim); text-align: left; }
   .link { max-width: 100%; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit; }
@@ -238,9 +237,25 @@
   .more { display: grid; color: var(--text-dim); visibility: hidden; }
   .more:hover { color: var(--text); }
   .row:hover .more, .row.selected .more { visibility: visible; }
+  @media (hover: none) {
+    .more { visibility: visible; }
+  }
   .bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
   .bars i { width: 3px; background: var(--accent); animation: bounce 0.9s ease-in-out infinite; }
   .bars i:nth-child(2) { animation-delay: -0.3s; }
   .bars i:nth-child(3) { animation-delay: -0.6s; }
   @keyframes bounce { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+  /* Last, so they override the rules above. */
+  /* The album column goes first, then the numbers. */
+  @media (max-width: 700px) {
+    .table, .table.noalbum { --cols: 36px minmax(0, 1fr) 76px; }
+    .album, .th.col-album { display: none; }
+    .head, .row { gap: 8px; padding: 0 8px; }
+  }
+  @media (max-width: 480px) {
+    .table, .table.noalbum { --cols: minmax(0, 1fr) 64px; }
+    .num { display: none; }
+    .thumb { width: 36px; }
+    .dur { gap: 4px; }
+  }
 </style>

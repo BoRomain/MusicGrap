@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SetReverb, SetSpeed } from '../../wailsjs/go/main/App'
+  import { SetReverb, SetSpeed } from '$backend'
   import { app, fill } from './store.svelte'
 
   const presets = [

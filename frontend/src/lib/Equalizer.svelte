@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SetEQBand, SetEQPreset } from '../../wailsjs/go/main/App'
+  import { SetEQBand, SetEQPreset } from '$backend'
   import { app, fill } from './store.svelte'
 
   const presetNames = ['Flat', 'Bass Boost', 'Treble Boost', 'Vocal', 'Rock', 'Electronic', 'Hip-Hop', 'Lo-Fi']

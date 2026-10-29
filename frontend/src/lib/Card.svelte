@@ -73,6 +73,9 @@
   }
   .play:hover { transform: scale(1.06) !important; }
   .card:hover .play, .card:focus-within .play { opacity: 1; transform: none; }
+  @media (hover: none) {
+    .play { opacity: 1; transform: none; width: 40px; height: 40px; }
+  }
   .title, .sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .title { font-weight: 700; }
   .round .title, .round .sub { text-align: center; }

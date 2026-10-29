@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
-  import { Next, Prev, Seek, SetRepeat, SetShuffle, TogglePause } from '../../wailsjs/go/main/App'
+  import { Next, Prev, Seek, SetRepeat, SetShuffle, TogglePause } from '$backend'
   import { app, fill, fmtTime } from './store.svelte'
   import Icon from './Icon.svelte'
 

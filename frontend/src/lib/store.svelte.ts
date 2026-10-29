@@ -1,6 +1,5 @@
-import { PlayQueue, SetShuffle } from '../../wailsjs/go/main/App'
-import { WindowFullscreen, WindowUnfullscreen } from '../../wailsjs/runtime/runtime'
-import type { audio, library, main, playlist, settings } from '../../wailsjs/go/models'
+import { ChooseMusicFolder, PlayQueue, SetShuffle, WindowFullscreen, WindowUnfullscreen } from '$backend'
+import type { audio, core, library, playlist, settings } from '../../wailsjs/go/models'
 
 export type Panel = 'queue' | 'eq' | 'slowed' | 'fade'
 
@@ -17,10 +16,12 @@ export const app = $state({
   settings: {} as settings.Settings,
   presets: {} as Record<string, number[]>,
   bands: [] as number[],
-  now: null as main.NowPlaying | null,
+  now: null as core.NowPlaying | null,
   state: { position: 0, duration: 0, paused: true, hasTrack: false } as audio.State,
   scan: null as { done: number; total: number } | null,
   audioError: '',
+  /** Error from the last user action (folder picker, permissions...), shown in a banner. */
+  notice: '',
   panel: null as Panel | null,
   query: '',
   menu: null as Menu | null,
@@ -124,6 +125,18 @@ export function coverIds(tracks: library.Track[]): string[] {
 
 export const albumTitle =(title: string) => title || 'Sans album'
 export const artistName = (name: string) => name || 'Artiste inconnu'
+
+// ---- Music folder ----
+
+export async function chooseFolder() {
+  try {
+    const dir = await ChooseMusicFolder()
+    app.notice = ''
+    if (dir) app.settings.musicDir = dir
+  } catch (e) {
+    app.notice = String(e instanceof Error ? e.message : e)
+  }
+}
 
 // ---- Playback helpers ----
 

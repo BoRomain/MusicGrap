@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { ChooseMusicFolder } from '../../wailsjs/go/main/App'
-  import { app, back, forward, go, nav, route } from './store.svelte'
+  import { app, back, chooseFolder, forward, go, nav, route } from './store.svelte'
   import Icon from './Icon.svelte'
   import Albums from './views/Albums.svelte'
   import AlbumPage from './views/AlbumPage.svelte'
@@ -24,11 +23,6 @@
   $effect(() => {
     if (r.view === 'search') searchInput?.focus()
   })
-
-  async function chooseFolder() {
-    const dir = await ChooseMusicFolder()
-    if (dir) app.settings.musicDir = dir
-  }
 </script>
 
 <section class="main" bind:this={scroller}>

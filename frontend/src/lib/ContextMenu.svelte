@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AddToPlaylist, CreatePlaylist, RemoveFromPlaylist } from '../../wailsjs/go/main/App'
+  import { AddToPlaylist, CreatePlaylist, RemoveFromPlaylist } from '$backend'
   import { albumKey, app, artistKey, go, type Menu } from './store.svelte'
   import Icon from './Icon.svelte'
 

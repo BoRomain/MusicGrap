@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { fade, scale } from 'svelte/transition'
-  import { GetQueue } from '../../wailsjs/go/main/App'
+  import { coverUrl as coverOf, GetQueue } from '$backend'
   import type { library } from '../../wailsjs/go/models'
   import { albumKey, albumTitle, app, artistKey, artistName, go, toggleCinema } from './store.svelte'
   import Cover from './Cover.svelte'
@@ -12,14 +12,16 @@
   /** "Now playing" view over the whole window. The controls fade out after a few seconds without moving the mouse. */
 
   const track = $derived(app.now?.track)
-  const coverUrl = $derived(app.now?.hasCover ? `/cover/${app.now.track.id}` : '')
+  const coverUrl = $derived(app.now?.hasCover ? coverOf(app.now.track.id) : '')
 
   let upNext = $state<library.Track | null>(null)
   $effect(() => {
     app.now?.track.id
     app.settings.shuffle
     app.settings.repeat
-    GetQueue().then((q) => (upNext = q?.[1] ?? null))
+    GetQueue().then((q) => {
+      upNext = q?.[1] ?? null
+    })
   })
 
   let idle = $state(false)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { GetQueue } from '../../wailsjs/go/main/App'
+  import { GetQueue } from '$backend'
   import type { library } from '../../wailsjs/go/models'
   import { app, fmtTime } from './store.svelte'
 
@@ -10,7 +10,9 @@
     app.now?.track.id
     app.settings.shuffle
     app.settings.repeat
-    GetQueue().then((q) => (queue = q ?? []))
+    GetQueue().then((q) => {
+      queue = q ?? []
+    })
   })
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { ChooseMusicFolder, CreatePlaylist, ScanLibrary } from '../../wailsjs/go/main/App'
-  import { app, coverIds, go, lib, plural, route, type Route } from './store.svelte'
+  import { CreatePlaylist, ScanLibrary } from '$backend'
+  import { app, chooseFolder, coverIds, go, lib, plural, route, type Route } from './store.svelte'
   import Cover from './Cover.svelte'
   import Icon from './Icon.svelte'
 
@@ -12,11 +12,6 @@
   ]
 
   const r = $derived(route())
-
-  async function chooseFolder() {
-    const dir = await ChooseMusicFolder()
-    if (dir) app.settings.musicDir = dir
-  }
 
   async function newPlaylist() {
     const p = await CreatePlaylist(`Playlist n°${app.playlists.length + 1}`)

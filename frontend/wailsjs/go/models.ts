@@ -31,48 +31,7 @@ export namespace audio {
 
 }
 
-export namespace library {
-	
-	export class Track {
-	    id: string;
-	    path: string;
-	    title: string;
-	    artist: string;
-	    albumArtist: string;
-	    album: string;
-	    discNo: number;
-	    trackNo: number;
-	    duration: number;
-	    modTime: number;
-	    size: number;
-	    tagsV: number;
-	    group: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new Track(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.id = source["id"];
-	        this.path = source["path"];
-	        this.title = source["title"];
-	        this.artist = source["artist"];
-	        this.albumArtist = source["albumArtist"];
-	        this.album = source["album"];
-	        this.discNo = source["discNo"];
-	        this.trackNo = source["trackNo"];
-	        this.duration = source["duration"];
-	        this.modTime = source["modTime"];
-	        this.size = source["size"];
-	        this.tagsV = source["tagsV"];
-	        this.group = source["group"];
-	    }
-	}
-
-}
-
-export namespace main {
+export namespace core {
 	
 	export class NowPlaying {
 	    track: library.Track;
@@ -151,6 +110,47 @@ export namespace main {
 		    }
 		    return a;
 		}
+	}
+
+}
+
+export namespace library {
+	
+	export class Track {
+	    id: string;
+	    path: string;
+	    title: string;
+	    artist: string;
+	    albumArtist: string;
+	    album: string;
+	    discNo: number;
+	    trackNo: number;
+	    duration: number;
+	    modTime: number;
+	    size: number;
+	    tagsV: number;
+	    group: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Track(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.path = source["path"];
+	        this.title = source["title"];
+	        this.artist = source["artist"];
+	        this.albumArtist = source["albumArtist"];
+	        this.album = source["album"];
+	        this.discNo = source["discNo"];
+	        this.trackNo = source["trackNo"];
+	        this.duration = source["duration"];
+	        this.modTime = source["modTime"];
+	        this.size = source["size"];
+	        this.tagsV = source["tagsV"];
+	        this.group = source["group"];
+	    }
 	}
 
 }

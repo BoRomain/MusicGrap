@@ -180,6 +180,15 @@ func (p *Player) TogglePause() {
 	}
 }
 
+// SetPaused pauses or resumes; resuming with nothing loaded restarts the current queue entry.
+func (p *Player) SetPaused(paused bool) {
+	var current bool
+	p.locked(func(e *Engine) { current = e.Current() == nil || e.Paused() })
+	if current != paused {
+		p.TogglePause()
+	}
+}
+
 func (p *Player) Next() error {
 	p.mu.Lock()
 	pos, id := p.queue.Next()

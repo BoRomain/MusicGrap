@@ -38,3 +38,7 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Android: Go core built by scripts/build-android.ps1
+android/app/libs/wave.aar
+android/app/libs/wave-sources.jar

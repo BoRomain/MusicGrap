@@ -146,7 +146,7 @@ func (l *Library) Scan(dir string, progress func(done, total int)) error {
 		if err != nil {
 			return nil // skip unreadable entries
 		}
-		if !d.IsDir() && audio.SupportedExt[strings.ToLower(filepath.Ext(path))] {
+		if !d.IsDir() && audio.Supported(strings.ToLower(filepath.Ext(path))) {
 			files = append(files, path)
 		}
 		return nil

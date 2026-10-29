@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SetCrossfade, SetCrossfadeOnSkip } from '../../wailsjs/go/main/App'
+  import { SetCrossfade, SetCrossfadeOnSkip } from '$backend'
   import { app, fill } from './store.svelte'
 
   function setCrossfade(v: number) {

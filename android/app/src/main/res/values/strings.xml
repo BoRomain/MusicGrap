@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Wave</string>
+    <string name="title_activity_main">Wave</string>
+    <string name="package_name">com.borom.wave</string>
+    <string name="custom_url_scheme">com.borom.wave</string>
+    <string name="playback_channel">Lecture</string>
+    <string name="play">Lecture</string>
+    <string name="pause">Pause</string>
+    <string name="next">Suivant</string>
+    <string name="previous">Précédent</string>
+</resources>

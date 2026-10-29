@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SetVolume } from '../../wailsjs/go/main/App'
+  import { SetVolume } from '$backend'
   import { app, fill } from './store.svelte'
   import Icon from './Icon.svelte'
 

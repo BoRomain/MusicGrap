@@ -6,7 +6,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/gopxl/beep/v2 v2.1.1
 	github.com/wailsapp/wails/v2 v2.17.0
-	golang.org/x/image v0.41.0
+	golang.org/x/image v0.47.0
 )
 
 require (
@@ -42,10 +42,16 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/wailsapp/go-webview2 v1.0.22 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
-	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/crypto v0.58.0 // indirect
+	golang.org/x/mobile v0.0.0-20261011034528-197770444867 // indirect
+	golang.org/x/mod v0.42.0 // indirect
+	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/tools v0.52.0 // indirect
 )
 
 // replace github.com/wailsapp/wails/v2 v2.17.0 => C:\Users\romain\go\pkg\mod
+
+tool golang.org/x/mobile/cmd/gobind

@@ -32,8 +32,17 @@ func Defaults() Settings {
 	}
 }
 
+var dirOverride string
+
+// SetDir replaces the config directory, for platforms where os.UserConfigDir
+// is not writable (Android passes the app's private files directory).
+func SetDir(dir string) { dirOverride = dir }
+
 // Dir returns the per-user config directory of the app.
 func Dir() string {
+	if dirOverride != "" {
+		return dirOverride
+	}
 	base, err := os.UserConfigDir()
 	if err != nil {
 		base = "."
