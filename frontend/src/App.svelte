@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { coverUrl as coverOf, EventsOn, GetInitialState, Next, Prev, onBackButton, Seek, TogglePause } from '$backend'
+  import { fade, fly } from 'svelte/transition'
+  import { coverUrl as coverOf, EventsOn, GetInitialState, isMobile, Next, Prev, onBackButton, Seek, TogglePause } from '$backend'
   import type { audio, core, library, playlist } from '../wailsjs/go/models'
   import { app, back, forward, nav, onFullscreenLeft, toggleCinema, toggleFullscreen } from './lib/store.svelte'
   import { applyPalette } from './lib/theme'
@@ -51,7 +52,8 @@
 
   // Android back button closes the topmost overlay, then goes back in history.
   onBackButton(() => {
-    if (app.menu) app.menu = null
+    if (app.drawer) app.drawer = false
+    else if (app.menu) app.menu = null
     else if (app.cinema) toggleCinema()
     else if (app.panel) app.panel = null
     else if (nav.index > 0) back()
@@ -107,8 +109,8 @@
   <div class="gradient"></div>
 </div>
 
-<div class="layout">
-  <Sidebar />
+<div class="layout" class:mobile={isMobile}>
+  {#if !isMobile}<Sidebar />{/if}
   <div class="center">
     {#if app.audioError}
       <div class="error">Sortie audio indisponible : {app.audioError}</div>
@@ -121,6 +123,13 @@
   <PlayerBar />
 </div>
 
+{#if app.drawer}
+  <!-- Phone navigation: the sidebar, dropped down from the top. -->
+  <div class="scrim" role="presentation" onclick={() => (app.drawer = false)} transition:fade={{ duration: 150 }}></div>
+  <div class="drawer" transition:fly={{ y: -24, duration: 200 }}>
+    <Sidebar menu />
+  </div>
+{/if}
 {#if app.panel}<SidePanel />{/if}
 {#if app.menu}<ContextMenu menu={app.menu} />{/if}
 {#if app.cinema}<Cinema />{/if}
@@ -163,6 +172,20 @@
     padding: max(var(--pad), env(safe-area-inset-top)) max(var(--pad), env(safe-area-inset-right)) env(safe-area-inset-bottom) max(var(--pad), env(safe-area-inset-left));
   }
   .layout > :global(.bar) { grid-column: 1 / -1; }
+  .layout.mobile { grid-template-columns: minmax(0, 1fr); }
+  .scrim { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, 0.5); }
+  .drawer {
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top));
+    left: 8px;
+    right: 8px;
+    z-index: 21;
+    max-height: 80dvh;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--bg1) 92%, black);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
   @media (max-width: 900px) {
     .layout { grid-template-columns: auto minmax(0, 1fr); }
   }

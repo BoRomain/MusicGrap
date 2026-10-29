@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isMobile } from '$backend'
   import { app, back, chooseFolder, forward, go, nav, route } from './store.svelte'
   import Icon from './Icon.svelte'
   import Albums from './views/Albums.svelte'
@@ -27,6 +28,9 @@
 
 <section class="main" bind:this={scroller}>
   <div class="top">
+    {#if isMobile}
+      <button class="nav menu" title="Menu" onclick={() => (app.drawer = !app.drawer)}><Icon name="menu" size={22} /></button>
+    {/if}
     <button class="nav" title="Précédent" disabled={nav.index === 0} onclick={back}><Icon name="back" size={22} /></button>
     <button class="nav" title="Suivant" disabled={nav.index === nav.history.length - 1} onclick={forward}>
       <Icon name="forward" size={22} />
@@ -102,6 +106,7 @@
     background: rgba(0, 0, 0, 0.5);
   }
   .nav:disabled { opacity: 0.4; cursor: default; }
+  .nav.menu { flex: none; width: 42px; height: 42px; }
   .search {
     display: flex;
     align-items: center;
@@ -149,7 +154,7 @@
   @media (max-width: 640px) {
     .main { --sticky-top: 62px; }
     .top { padding: 10px 12px; }
-    .nav { display: none; }
+    .nav:not(.menu) { display: none; }
     .search { margin-left: 0; }
     .page { padding: 0 12px 24px; }
     .page :global(h2.section) { margin-top: 20px; font-size: 20px; }

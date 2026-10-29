@@ -11,15 +11,23 @@
     { route: { view: 'songs' }, label: 'Titres', icon: 'note' },
   ]
 
+  /** In the phone menu: labels always shown, and the menu closes on navigation. */
+  let { menu = false }: { menu?: boolean } = $props()
+
   const r = $derived(route())
+
+  function open(to: Route) {
+    go(to)
+    if (menu) app.drawer = false
+  }
 
   async function newPlaylist() {
     const p = await CreatePlaylist(`Playlist n°${app.playlists.length + 1}`)
-    go({ view: 'playlist', key: p.id })
+    open({ view: 'playlist', key: p.id })
   }
 </script>
 
-<aside>
+<aside class:menu>
   <div class="box">
     <div class="brand">
       <Icon name="slowed" size={26} />
@@ -27,7 +35,7 @@
     </div>
     <nav>
       {#each links as l}
-        <button class:active={r.view === l.route.view} title={l.label} onclick={() => go(l.route)}>
+        <button class:active={r.view === l.route.view} title={l.label} onclick={() => open(l.route)}>
           <Icon name={l.icon} size={22} />
           <span class="text">{l.label}</span>
         </button>
@@ -45,7 +53,7 @@
       {#each app.playlists as p (p.id)}
         {@const tracks = lib.playlistTracks(p).map((e) => e.track)}
         <li>
-          <button class:active={r.view === 'playlist' && r.key === p.id} title={p.name} onclick={() => go({ view: 'playlist', key: p.id })}>
+          <button class:active={r.view === 'playlist' && r.key === p.id} title={p.name} onclick={() => open({ view: 'playlist', key: p.id })}>
             <span class="thumb"><Cover ids={coverIds(tracks)} icon="playlist" /></span>
             <span class="names">
               <span class="name">{p.name}</span>
@@ -154,21 +162,23 @@
   .bar { height: 3px; margin-top: 6px; margin-right: 10px; border-radius: 2px; background: var(--surface); }
   .bar div { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.2s; }
 
-  /* Icon rail in narrow windows; the labels move to tooltips. */
+  /* Icon rail in narrow windows; the labels move to tooltips. Not in the phone menu. */
   @media (max-width: 900px) {
-    aside { width: 64px; }
-    .text, .names, .label, .count, .empty { display: none; }
-    .brand { justify-content: center; padding: 16px 0 4px; }
-    nav { padding: 8px 4px 10px; }
-    nav button { justify-content: center; padding: 10px 0; }
-    header { justify-content: center; padding: 10px 0 6px; }
-    ul { padding: 0 4px; }
-    li button { justify-content: center; padding: 6px 4px; }
-    .thumb { width: 44px; }
-    footer { flex-direction: column; gap: 4px; padding: 8px 0; }
-    .scan { flex: none; width: 40px; font-size: 0; }
-    .bar { margin: 0; }
+    aside:not(.menu) { width: 64px; }
+    aside:not(.menu) .text, aside:not(.menu) .names, aside:not(.menu) .label, aside:not(.menu) .count, aside:not(.menu) .empty { display: none; }
+    aside:not(.menu) .brand { justify-content: center; padding: 16px 0 4px; }
+    aside:not(.menu) nav { padding: 8px 4px 10px; }
+    aside:not(.menu) nav button { justify-content: center; padding: 10px 0; }
+    aside:not(.menu) header { justify-content: center; padding: 10px 0 6px; }
+    aside:not(.menu) ul { padding: 0 4px; }
+    aside:not(.menu) li button { justify-content: center; padding: 6px 4px; }
+    aside:not(.menu) .thumb { width: 44px; }
+    aside:not(.menu) footer { flex-direction: column; gap: 4px; padding: 8px 0; }
+    aside:not(.menu) .scan { flex: none; width: 40px; font-size: 0; }
+    aside:not(.menu) .bar { margin: 0; }
   }
+  .menu .library { flex: none; }
+  .menu ul { overflow: visible; }
   @media (max-height: 520px) {
     .brand { display: none; }
   }

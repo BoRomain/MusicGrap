@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isMobile } from '$backend'
   import type { library } from '../../wailsjs/go/models'
   import { albumKey, albumTitle, app, artistKey, artistName, fmtTime, go, playTracks } from './store.svelte'
   import Cover from './Cover.svelte'
@@ -131,14 +132,23 @@
         {#if showCover}<span class="thumb"><Cover ids={[t.id]} /></span>{/if}
         <span class="names">
           <span class="title">{t.title}</span>
-          <button class="sub link" onclick={(e) => link(e, () => go({ view: 'artist', key: artistKey(t.group) }))}>
-            {artistName(t.artist)}
-          </button>
+          {#if isMobile}
+            <!-- Phone: a tap anywhere on the row plays it, so the artist isn't a link. -->
+            <span class="sub">{artistName(t.artist)}</span>
+          {:else}
+            <button class="sub link" onclick={(e) => link(e, () => go({ view: 'artist', key: artistKey(t.group) }))}>
+              {artistName(t.artist)}
+            </button>
+          {/if}
         </span>
       </span>
       {#if showAlbum}
         <span class="album">
-          <button class="link" onclick={(e) => link(e, () => go({ view: 'album', key: albumKey(t) }))}>{albumTitle(t.album)}</button>
+          {#if isMobile}
+            {albumTitle(t.album)}
+          {:else}
+            <button class="link" onclick={(e) => link(e, () => go({ view: 'album', key: albumKey(t) }))}>{albumTitle(t.album)}</button>
+          {/if}
         </span>
       {/if}
       <span class="dur">

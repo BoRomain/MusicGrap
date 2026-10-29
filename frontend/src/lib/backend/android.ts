@@ -25,6 +25,8 @@ const ready = Wave.coverBaseUrl().then(({ url }) => (coverBase = url))
 
 export const coverUrl = (id: string) => coverBase + id
 
+export const isMobile: boolean = true
+
 export const GetInitialState = async () => {
   await ready
   return call<core.InitState>('GetInitialState')

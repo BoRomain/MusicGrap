@@ -26,6 +26,8 @@ export const app = $state({
   query: '',
   menu: null as Menu | null,
   cinema: false,
+  /** Phone navigation menu (replaces the sidebar). */
+  drawer: false,
 })
 
 // ---- Navigation, with back / forward history ----
