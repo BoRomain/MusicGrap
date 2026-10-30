@@ -55,6 +55,8 @@ export function forward() {
 
 // ---- Library grouped like Spotify ----
 
+export type AlbumKind = 'album' | 'ep' | 'single'
+
 export type Album = {
   key: string
   title: string
@@ -62,9 +64,21 @@ export type Album = {
   artistKey: string
   tracks: library.Track[]
   duration: number
+  kind: AlbumKind
+  /** Earliest release date among its tracks, '' when untagged. */
+  date: string
 }
 
-export type Artist = { key: string; name: string; albums: Album[]; tracks: library.Track[] }
+/** Spotify's rule: under 30 min, 1–3 tracks is a single and 4–6 an EP. Loose tracks stay an album. */
+function albumKind(a: Album): AlbumKind {
+  if (!a.title || a.duration >= 30 * 60) return 'album'
+  if (a.tracks.length <= 3) return 'single'
+  if (a.tracks.length <= 6) return 'ep'
+  return 'album'
+}
+
+/** cover is the id of the artist's latest released track, whose artwork stands for the artist. */
+export type Artist = { key: string; name: string; albums: Album[]; tracks: library.Track[]; cover: string }
 
 export const artistKey = (name: string) => name.toLowerCase()
 export const albumKey = (t: library.Track) => `${artistKey(t.group)}\u0000${t.album.toLowerCase()}`
@@ -79,12 +93,14 @@ class Lib {
       const key = albumKey(t)
       let a = out.get(key)
       if (!a) {
-        a = { key, title: t.album, artist: t.group, artistKey: artistKey(t.group), tracks: [], duration: 0 }
+        a = { key, title: t.album, artist: t.group, artistKey: artistKey(t.group), tracks: [], duration: 0, kind: 'album', date: '' }
         out.set(key, a)
       }
       a.tracks.push(t)
       a.duration += t.duration
+      if (t.date && (!a.date || t.date < a.date)) a.date = t.date
     }
+    for (const a of out.values()) a.kind = albumKind(a)
     return out
   })
 
@@ -93,11 +109,16 @@ class Lib {
     for (const a of this.albums.values()) {
       let ar = out.get(a.artistKey)
       if (!ar) {
-        ar = { key: a.artistKey, name: a.artist, albums: [], tracks: [] }
+        ar = { key: a.artistKey, name: a.artist, albums: [], tracks: [], cover: a.tracks[0].id }
         out.set(a.artistKey, ar)
       }
       ar.albums.push(a)
       ar.tracks.push(...a.tracks)
+    }
+    // Latest dated track wins; without any date, the first track is kept.
+    for (const ar of out.values()) {
+      let date = ''
+      for (const t of ar.tracks) if (t.date > date) [date, ar.cover] = [t.date, t.id]
     }
     return out
   })
@@ -127,6 +148,12 @@ export function coverIds(tracks: library.Track[]): string[] {
 
 export const albumTitle =(title: string) => title || 'Sans album'
 export const artistName = (name: string) => name || 'Artiste inconnu'
+
+export const albumKinds: AlbumKind[] = ['album', 'ep', 'single']
+export const kindLabel: Record<AlbumKind, string> = { album: 'Album', ep: 'EP', single: 'Single' }
+export const kindPlural: Record<AlbumKind, string> = { album: 'Albums', ep: 'EP', single: 'Singles' }
+/** "2 albums", "1 EP", "3 singles". */
+export const kindCount = (n: number, k: AlbumKind) => (k === 'ep' ? `${n} EP` : plural(n, kindLabel[k].toLowerCase()))
 
 // ---- Music folder ----
 

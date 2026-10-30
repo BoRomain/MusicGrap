@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -23,21 +24,23 @@ import (
 )
 
 // tagsVersion is bumped when readTrack extracts new fields, so cached entries get re-read.
-const tagsVersion = 1
+const tagsVersion = 2
 
 type Track struct {
-	ID          string  `json:"id"`
-	Path        string  `json:"path"`
-	Title       string  `json:"title"`
-	Artist      string  `json:"artist"`
-	AlbumArtist string  `json:"albumArtist"`
-	Album       string  `json:"album"`
-	DiscNo      int     `json:"discNo"`
-	TrackNo     int     `json:"trackNo"`
-	Duration    float64 `json:"duration"`
-	ModTime     int64   `json:"modTime"`
-	Size        int64   `json:"size"`
-	TagsV       int     `json:"tagsV"`
+	ID          string `json:"id"`
+	Path        string `json:"path"`
+	Title       string `json:"title"`
+	Artist      string `json:"artist"`
+	AlbumArtist string `json:"albumArtist"`
+	Album       string `json:"album"`
+	DiscNo      int    `json:"discNo"`
+	TrackNo     int    `json:"trackNo"`
+	// Date is the release date as YYYY, YYYY-MM or YYYY-MM-DD, so it sorts as a string.
+	Date     string  `json:"date"`
+	Duration float64 `json:"duration"`
+	ModTime  int64   `json:"modTime"`
+	Size     int64   `json:"size"`
+	TagsV    int     `json:"tagsV"`
 	// Group is the artist the album is filed under (see groupArtist), computed on load.
 	Group string `json:"group"`
 }
@@ -58,6 +61,16 @@ var artistSeparator = regexp.MustCompile(`(?i)\s*[,;/&]\s*|\s+(feat\.?|ft\.?|fea
 
 // leadingNumber matches a track number at the start of a file name ("01 - Title", "3. Title").
 var leadingNumber = regexp.MustCompile(`^\s*(\d{1,3})\b`)
+
+// dateTags are the raw tags holding a release date: ID3v2.4, ID3v2.3/2.2, Vorbis/ID3v1, MP4.
+var dateTags = []string{"TDRC", "TDRL", "TYER", "TYE", "date", "year", "\xa9day"}
+
+var datePrefix = regexp.MustCompile(`^\d{4}(-\d{2}(-\d{2})?)?`)
+
+// releaseDate keeps the YYYY[-MM[-DD]] part of a date tag ("2021-05-14T00:00:00" → "2021-05-14").
+func releaseDate(s string) string {
+	return datePrefix.FindString(strings.TrimSpace(s))
+}
 
 // Library is safe for concurrent use.
 type Library struct {
@@ -232,6 +245,16 @@ func readTrack(path string, cached map[string]Track) *Track {
 			t.Album = strings.TrimSpace(m.Album())
 			t.DiscNo, _ = m.Disc()
 			t.TrackNo, _ = m.Track()
+			for _, k := range dateTags {
+				if v, ok := m.Raw()[k].(string); ok {
+					if t.Date = releaseDate(v); t.Date != "" {
+						break
+					}
+				}
+			}
+			if t.Date == "" && m.Year() > 0 {
+				t.Date = fmt.Sprintf("%04d", m.Year())
+			}
 		}
 		f.Close()
 	}

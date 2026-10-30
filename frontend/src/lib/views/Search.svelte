@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { albumTitle, app, artistName, go, lib, playTracks, plural } from '../store.svelte'
+  import { albumTitle, app, artistName, go, kindLabel, lib, playTracks, plural } from '../store.svelte'
   import Card from '../Card.svelte'
   import TrackTable from '../TrackTable.svelte'
 
@@ -40,7 +40,7 @@
     <div class="grid">
       {#each artists.slice(0, 12) as ar (ar.key)}
         <Card
-          ids={[ar.tracks[0].id]}
+          ids={[ar.cover]}
           round
           icon="artist"
           title={artistName(ar.name)}
@@ -60,7 +60,7 @@
           ids={[a.tracks[0].id]}
           icon="album"
           title={albumTitle(a.title)}
-          subtitle={artistName(a.artist)}
+          subtitle="{kindLabel[a.kind]} · {artistName(a.artist)}"
           onopen={() => go({ view: 'album', key: a.key })}
           onplay={() => playTracks(a.tracks)}
         />

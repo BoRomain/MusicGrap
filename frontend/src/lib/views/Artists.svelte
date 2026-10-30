@@ -8,7 +8,7 @@
 <div class="grid">
   {#each lib.artists.values() as ar (ar.key)}
     <Card
-      ids={[ar.tracks[0].id]}
+      ids={[ar.cover]}
       round
       icon="artist"
       title={artistName(ar.name)}

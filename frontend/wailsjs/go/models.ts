@@ -125,6 +125,7 @@ export namespace library {
 	    album: string;
 	    discNo: number;
 	    trackNo: number;
+	    date: string;
 	    duration: number;
 	    modTime: number;
 	    size: number;
@@ -145,6 +146,7 @@ export namespace library {
 	        this.album = source["album"];
 	        this.discNo = source["discNo"];
 	        this.trackNo = source["trackNo"];
+	        this.date = source["date"];
 	        this.duration = source["duration"];
 	        this.modTime = source["modTime"];
 	        this.size = source["size"];

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { albumTitle, artistName, fmtLong, go, lib, playTracks, plural, shufflePlay } from '../store.svelte'
+  import { albumTitle, artistName, fmtLong, go, kindLabel, lib, playTracks, plural, shufflePlay } from '../store.svelte'
   import Card from '../Card.svelte'
   import MediaHeader from '../MediaHeader.svelte'
   import TrackTable from '../TrackTable.svelte'
@@ -12,7 +12,7 @@
 
 {#if album}
   <MediaHeader
-    kind="Album"
+    kind={kindLabel[album.kind]}
     title={albumTitle(album.title)}
     ids={[album.tracks[0].id]}
     icon="album"
@@ -35,7 +35,7 @@
           ids={[a.tracks[0].id]}
           icon="album"
           title={albumTitle(a.title)}
-          subtitle={plural(a.tracks.length, 'titre')}
+          subtitle="{kindLabel[a.kind]} · {plural(a.tracks.length, 'titre')}"
           onopen={() => go({ view: 'album', key: a.key })}
           onplay={() => playTracks(a.tracks)}
         />
