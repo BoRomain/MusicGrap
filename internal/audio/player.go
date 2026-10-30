@@ -1,7 +1,9 @@
 package audio
 
 import (
+	"encoding/binary"
 	"log"
+	"math"
 	"sync"
 	"time"
 
@@ -47,21 +49,57 @@ type Player struct {
 	crossfadeOnSkip bool
 
 	preloadMu sync.Mutex
+
+	pull      bool       // PullOutput at creation
+	outMu     sync.Mutex // stands for the speaker lock in pull mode
+	renderBuf [][2]float64
 }
 
 // OutputBuffer is the audio output buffer. Larger means fewer dropouts under
 // load but slower reaction to pause and seek. Set it before NewPlayer.
 var OutputBuffer = 100 * time.Millisecond
 
+// PullOutput leaves the audio device to the platform, which pulls the samples
+// with Player.Render (Android AudioTrack). Set it before NewPlayer.
+var PullOutput = false
+
 // NewPlayer opens the audio device and starts the playback goroutine.
 func NewPlayer(lookup func(id string) (string, bool), cb Callbacks) (*Player, error) {
-	if err := speaker.Init(SampleRate, SampleRate.N(OutputBuffer)); err != nil {
-		return nil, err
+	p := &Player{eng: NewEngine(), lookup: lookup, cb: cb, queue: queue.New(), pull: PullOutput}
+	if !p.pull {
+		if err := speaker.Init(SampleRate, SampleRate.N(OutputBuffer)); err != nil {
+			return nil, err
+		}
+		speaker.Play(p.eng)
 	}
-	p := &Player{eng: NewEngine(), lookup: lookup, cb: cb, queue: queue.New()}
-	speaker.Play(p.eng)
 	go p.loop()
 	return p, nil
+}
+
+// RenderFrameBytes is the size of one frame given by Render: stereo float32.
+const RenderFrameBytes = 8
+
+// Render fills buf with the next frames as interleaved stereo float32
+// little-endian samples and returns the number of bytes written. It returns 0
+// when nothing is audible (no track, or paused once the fade-out is done), so
+// the platform can stop its output. Pull mode only.
+func (p *Player) Render(buf []byte) int {
+	frames := len(buf) / RenderFrameBytes
+	p.outMu.Lock()
+	defer p.outMu.Unlock()
+	if p.eng.idle() {
+		return 0
+	}
+	if cap(p.renderBuf) < frames {
+		p.renderBuf = make([][2]float64, frames)
+	}
+	s := p.renderBuf[:frames]
+	p.eng.Stream(s)
+	for i, f := range s {
+		binary.LittleEndian.PutUint32(buf[i*8:], math.Float32bits(float32(f[0])))
+		binary.LittleEndian.PutUint32(buf[i*8+4:], math.Float32bits(float32(f[1])))
+	}
+	return frames * RenderFrameBytes
 }
 
 func (p *Player) loop() {
@@ -110,8 +148,13 @@ func (p *Player) logStats() {
 
 // locked runs fn with the audio callback paused.
 func (p *Player) locked(fn func(e *Engine)) {
-	speaker.Lock()
-	defer speaker.Unlock()
+	if p.pull {
+		p.outMu.Lock()
+		defer p.outMu.Unlock()
+	} else {
+		speaker.Lock()
+		defer speaker.Unlock()
+	}
 	fn(p.eng)
 }
 

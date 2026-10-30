@@ -85,6 +85,10 @@ public class PlaybackService extends Service implements WaveCore.Sink {
         }
     };
 
+    /** Logs thermal throttling, the usual cause of late audio. Null before API 29. */
+    private final PowerManager.OnThermalStatusChangedListener thermal =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? status -> Log.i(TAG, "thermal status " + status) : null;
+
     private final AudioManager.OnAudioFocusChangeListener focusListener = change -> {
         switch (change) {
             case AudioManager.AUDIOFOCUS_LOSS:
@@ -116,6 +120,9 @@ public class PlaybackService extends Service implements WaveCore.Sink {
 
         wakeLock = getSystemService(PowerManager.class).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wave:playback");
         wakeLock.setReferenceCounted(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getSystemService(PowerManager.class).addThermalStatusListener(getMainExecutor(), thermal);
+        }
 
         audio = getSystemService(AudioManager.class);
         focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
@@ -165,6 +172,9 @@ public class PlaybackService extends Service implements WaveCore.Sink {
         if (noisyRegistered) unregisterReceiver(noisy);
         audio.abandonAudioFocusRequest(focusRequest);
         if (wakeLock.isHeld()) wakeLock.release();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getSystemService(PowerManager.class).removeThermalStatusListener(thermal);
+        }
         session.release();
         covers.shutdown();
         super.onDestroy();

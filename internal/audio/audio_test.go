@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"encoding/binary"
 	"math"
 	"testing"
 )
@@ -162,6 +163,30 @@ func TestCrossfadeLengthIndependentOfSpeed(t *testing.T) {
 	}
 	if v := out[6*n+600][0]; math.Abs(v-0.5) > 1e-3 {
 		t.Fatalf("fade not finished by 6s: %v", v)
+	}
+}
+
+func TestRenderPull(t *testing.T) {
+	p := &Player{eng: NewEngine(), pull: true}
+	buf := make([]byte, 512*RenderFrameBytes)
+	if n := p.Render(buf); n != 0 {
+		t.Fatalf("no track: rendered %d bytes, want 0", n)
+	}
+	p.locked(func(e *Engine) { e.Skip(testDeck(0.5, 1, "a"), 0) })
+	if n := p.Render(buf); n != len(buf) {
+		t.Fatalf("rendered %d bytes, want %d", n, len(buf))
+	}
+	for _, off := range []int{0, 4, len(buf) - 4} {
+		if v := math.Float32frombits(binary.LittleEndian.Uint32(buf[off:])); math.Abs(float64(v)-0.5) > 1e-3 {
+			t.Fatalf("sample at byte %d = %v, want 0.5", off, v)
+		}
+	}
+	p.locked(func(e *Engine) { e.SetPaused(true) })
+	// The pause ramp (20 ms) is rendered, then nothing.
+	for i := 0; p.Render(buf) != 0; i++ {
+		if i == 3 {
+			t.Fatal("paused: still rendering after the ramp")
+		}
 	}
 }
 
