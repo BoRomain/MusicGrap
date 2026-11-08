@@ -1,5 +1,8 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
+  import { TogglePause } from '$backend'
+  import type { library } from '../../wailsjs/go/models'
+  import { app } from './store.svelte'
   import Cover from './Cover.svelte'
   import Icon from './Icon.svelte'
 
@@ -15,6 +18,7 @@
     onplay,
     onshuffle,
     onrename,
+    tracks = [],
   }: {
     kind: string
     title: string
@@ -26,7 +30,12 @@
     onplay: () => void
     onshuffle: () => void
     onrename?: (name: string) => void
+    /** The page's tracks: while one of them is loaded, the play button pauses and resumes it. */
+    tracks?: library.Track[]
   } = $props()
+
+  const current = $derived(!!app.now && tracks.some((t) => t.id === app.now?.track.id))
+  const playing = $derived(current && app.state.hasTrack && !app.state.paused)
 
   let editing = $state(false)
 
@@ -68,7 +77,9 @@
 </header>
 
 <div class="bar">
-  <button class="play" title="Lire" onclick={onplay}><Icon name="play" size={28} /></button>
+  <button class="play" title={playing ? 'Pause' : 'Lire'} onclick={() => (current ? TogglePause() : onplay())}>
+    <Icon name={playing ? 'pause' : 'play'} size={28} />
+  </button>
   <button class="icon" title="Lecture aléatoire" onclick={onshuffle}><Icon name="shuffle" size={26} /></button>
   {#if onrename}
     <button class="icon" title="Renommer" onclick={() => (editing = true)}><Icon name="edit" size={22} /></button>
@@ -122,8 +133,9 @@
   .icon { display: grid; color: var(--text-dim); transition: color 0.12s, transform 0.12s; }
   .icon:hover { color: var(--text); transform: scale(1.06); }
   @media (max-width: 640px) {
-    header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px 0 12px; }
-    .art { width: 140px; }
+    header { flex-direction: column; align-items: stretch; gap: 16px; padding: 16px 0 12px; }
+    /* Phones: big centred cover, as the header has the whole width. */
+    .art { align-self: center; width: min(62vw, 34vh, 260px); }
     .play { width: 48px; height: 48px; }
   }
   @media (max-height: 560px) {

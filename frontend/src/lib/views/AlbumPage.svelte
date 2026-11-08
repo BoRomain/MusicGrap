@@ -18,6 +18,7 @@
     icon="album"
     onplay={() => playTracks(album.tracks)}
     onshuffle={() => shufflePlay(album.tracks)}
+    tracks={album.tracks}
   >
     {#snippet meta()}
       <button class="artist" onclick={() => go({ view: 'artist', key: album.artistKey })}><b>{artistName(album.artist)}</b></button>

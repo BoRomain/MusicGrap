@@ -13,6 +13,7 @@
   icon="note"
   onplay={() => playTracks(app.tracks)}
   onshuffle={() => shufflePlay(app.tracks)}
+  tracks={app.tracks}
 >
   {#snippet meta()}{plural(app.tracks.length, 'titre')}, {fmtLong(duration)}{/snippet}
 </MediaHeader>

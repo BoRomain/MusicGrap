@@ -50,7 +50,7 @@
   }
 </script>
 
-<svelte:window onmousemove={wake} onkeydown={wake} />
+<svelte:window onmousemove={wake} onpointerdown={wake} onkeydown={wake} />
 
 <div class="cinema" class:idle transition:fade={{ duration: 250 }}>
   <div class="bg" aria-hidden="true">
@@ -115,9 +115,11 @@
     inset: 0;
     z-index: 60;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    /* Without it the implicit column grows to its widest child and the page overflows on phones. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 24px;
-    padding: 32px clamp(24px, 4vw, 64px) 28px;
+    padding: max(32px, env(safe-area-inset-top)) clamp(24px, 4vw, 64px) max(28px, env(safe-area-inset-bottom));
     overflow: hidden;
     background:
       radial-gradient(ellipse at 20% 30%, color-mix(in srgb, var(--bg2) 55%, transparent), transparent 65%),
@@ -196,8 +198,10 @@
     .artist { align-self: center; }
   }
   @media (max-width: 640px) {
-    .cinema { gap: 16px; padding: 20px 16px; }
+    .cinema { gap: 16px; padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); }
     .next { display: none; }
+    /* Phones have volume keys; this leaves room for the exit button. */
+    footer :global(.volume) { display: none; }
     h1 { font-size: clamp(24px, 7vw, 48px); }
   }
   @media (max-height: 560px) {

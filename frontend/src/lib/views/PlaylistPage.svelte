@@ -27,6 +27,7 @@
     icon="playlist"
     onplay={() => playTracks(tracks)}
     onshuffle={() => shufflePlay(tracks)}
+    {tracks}
     onrename={(name) => RenamePlaylist(playlist.id, name)}
   >
     {#snippet meta()}

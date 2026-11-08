@@ -268,4 +268,8 @@
     .thumb { width: 36px; }
     .dur { gap: 4px; }
   }
+  /* Phones: one line per title keeps the rows even and the list dense. */
+  @media (max-width: 640px) {
+    .title { display: block; white-space: nowrap; }
+  }
 </style>

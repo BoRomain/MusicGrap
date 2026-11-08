@@ -19,6 +19,7 @@
     icon="artist"
     onplay={() => playTracks(artist.tracks)}
     onshuffle={() => shufflePlay(artist.tracks)}
+    tracks={artist.tracks}
   >
     {#snippet meta()}
       {plural(artist.albums.length, 'album')} · {plural(artist.tracks.length, 'titre')}, {fmtLong(duration)}

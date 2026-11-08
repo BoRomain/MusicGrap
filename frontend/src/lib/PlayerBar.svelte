@@ -109,6 +109,8 @@
     .thumb { width: 44px; }
     .bar > :global(.transport) { grid-area: transport; }
     .right { grid-area: right; }
-    .extra { display: none; }
+    /* .right qualifies it so it beats button.small; the panels stay reachable from the panel tabs,
+       and phones have volume keys. */
+    .right .extra, .right :global(.volume) { display: none; }
   }
 </style>
