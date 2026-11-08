@@ -153,7 +153,13 @@
   }
   @media (max-width: 640px) {
     .main { --sticky-top: 62px; }
-    .top { padding: 10px 12px; }
+    /* Opaque on phones: the Android WebView barely blurs, so scrolled rows showed through the search field.
+       The mix matches the top of .main's gradient. */
+    .top {
+      padding: 10px 12px;
+      background: color-mix(in srgb, var(--bg2) 45%, var(--bg1));
+      box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.5);
+    }
     .nav:not(.menu) { display: none; }
     .search { margin-left: 0; }
     .page { padding: 0 12px 24px; }
