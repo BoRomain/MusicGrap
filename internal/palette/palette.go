@@ -76,8 +76,9 @@ func FromDecoded(img image.Image) Palette {
 		}
 	}
 
-	bg1 := clampLightness(dominant, 0.10, 0.28)
-	bg2 := clampLightness(vibrant, 0.18, 0.38)
+	// Kept dark so bright artwork tints the UI without washing it out.
+	bg1 := clampLightness(dominant, 0.07, 0.18)
+	bg2 := clampLightness(vibrant, 0.12, 0.26)
 	accent := vibrant
 	h, s, l := toHSL(accent)
 	accent = fromHSL(h, math.Max(s, 0.45), math.Max(0.58, math.Min(l, 0.72)))
