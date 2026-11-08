@@ -105,3 +105,17 @@ func TestScanAndPlayRealFile(t *testing.T) {
 		t.Fatal("expected silence after the 1 s file")
 	}
 }
+
+func TestReleaseDate(t *testing.T) {
+	for in, want := range map[string]string{
+		"2021-05-14T00:00:00": "2021-05-14",
+		"2019":                "2019",
+		" 2020-03 ":           "2020-03",
+		"":                    "",
+		"abc":                 "",
+	} {
+		if got := releaseDate(in); got != want {
+			t.Errorf("releaseDate(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

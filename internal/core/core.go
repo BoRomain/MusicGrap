@@ -99,6 +99,15 @@ func (a *Core) Start() {
 	p.SetRepeat(s.Repeat)
 }
 
+// Render gives the next audio frames to a platform output (see audio.PullOutput).
+// It returns 0 when nothing is audible or the audio failed to start.
+func (a *Core) Render(buf []byte) int {
+	if a.player == nil {
+		return 0
+	}
+	return a.player.Render(buf)
+}
+
 // Shutdown saves the settings.
 func (a *Core) Shutdown() { a.saveSettings() }
 

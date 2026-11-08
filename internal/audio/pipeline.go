@@ -93,8 +93,11 @@ func (e *Engine) emit(kind EventKind, d *Deck) {
 	}
 }
 
+// idle reports whether Stream would only produce silence.
+func (e *Engine) idle() bool { return e.cur == nil || (e.paused && e.gain == 0) }
+
 func (e *Engine) Stream(out [][2]float64) (int, bool) {
-	if e.cur == nil || (e.paused && e.gain == 0) {
+	if e.idle() {
 		clear(out)
 		return len(out), true
 	}

@@ -36,6 +36,7 @@ public final class WaveCore {
                     for (Sink s : sinks) s.onEvent(name, payload);
                 }
             });
+            AudioOutput.start();
             started = true;
         } catch (Exception e) {
             Log.e(TAG, "start", e);
