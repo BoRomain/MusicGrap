@@ -68,6 +68,7 @@ func (a *App) Seek(sec float64) error                  { return a.core.Seek(sec)
 func (a *App) SetVolume(v float64)                     { a.core.SetVolume(v) }
 func (a *App) SetEQBand(band int, db float64)          { a.core.SetEQBand(band, db) }
 func (a *App) SetEQPreset(name string) [10]float64     { return a.core.SetEQPreset(name) }
+func (a *App) SetEQGains(gains [10]float64)            { a.core.SetEQGains(gains) }
 func (a *App) SetSpeed(speed float64)                  { a.core.SetSpeed(speed) }
 func (a *App) SetReverb(wet, room float64)             { a.core.SetReverb(wet, room) }
 func (a *App) SetCrossfade(sec float64)                { a.core.SetCrossfade(sec) }

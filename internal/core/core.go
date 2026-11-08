@@ -294,6 +294,12 @@ func (a *Core) SetEQBand(band int, db float64) {
 	a.withPlayer(func(p *audio.Player) error { p.SetEQGains(gains); return nil })
 }
 
+// SetEQGains sets all band gains at once (the curve editor moves every band together).
+func (a *Core) SetEQGains(gains [10]float64) {
+	a.update(func(s *settings.Settings) { s.EQ, s.EQPreset = gains, "Custom" })
+	a.withPlayer(func(p *audio.Player) error { p.SetEQGains(gains); return nil })
+}
+
 // SetEQPreset applies a named preset and returns its gains.
 func (a *Core) SetEQPreset(name string) [10]float64 {
 	gains, ok := audio.EQPresets[name]

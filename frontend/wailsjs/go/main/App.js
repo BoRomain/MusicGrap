@@ -70,6 +70,10 @@ export function SetEQBand(arg1, arg2) {
   return window['go']['main']['App']['SetEQBand'](arg1, arg2);
 }
 
+export function SetEQGains(arg1) {
+  return window['go']['main']['App']['SetEQGains'](arg1);
+}
+
 export function SetEQPreset(arg1) {
   return window['go']['main']['App']['SetEQPreset'](arg1);
 }

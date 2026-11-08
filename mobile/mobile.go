@@ -209,6 +209,10 @@ func dispatch(b *core.Core, method string, raw []json.RawMessage) (any, error) {
 	case "SetEQBand":
 		band, db := int(num(0)), num(1)
 		call = func() (any, error) { b.SetEQBand(band, db); return nil, nil }
+	case "SetEQGains":
+		gains, e := arg[[10]float64](raw, 0)
+		err = errors.Join(err, e)
+		call = func() (any, error) { b.SetEQGains(gains); return nil, nil }
 	case "SetEQPreset":
 		name := str(0)
 		call = func() (any, error) { return b.SetEQPreset(name), nil }

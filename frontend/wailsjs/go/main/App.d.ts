@@ -38,6 +38,8 @@ export function SetCrossfadeOnSkip(arg1:boolean):Promise<void>;
 
 export function SetEQBand(arg1:number,arg2:number):Promise<void>;
 
+export function SetEQGains(arg1:any):Promise<void>;
+
 export function SetEQPreset(arg1:string):Promise<any>;
 
 export function SetRepeat(arg1:string):Promise<void>;
