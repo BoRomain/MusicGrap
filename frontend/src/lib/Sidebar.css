@@ -1,0 +1,71 @@
+.sidebar { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.sidebar .box {
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(20px);
+}
+.sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 18px 20px 6px; font-size: 20px; font-weight: 800; color: var(--accent); }
+.sidebar .brand span { color: var(--text); }
+.sidebar nav { display: flex; flex-direction: column; padding: 8px 8px 10px; }
+.sidebar nav button {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 9px 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+  transition: color 0.15s;
+}
+.sidebar nav button:hover, .sidebar nav button.active { color: var(--text); }
+.sidebar nav button.active svg { color: var(--accent); }
+.sidebar .library { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sidebar header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px 20px; }
+.sidebar .label { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--text-dim); }
+.sidebar .ui-btn--ghost { color: var(--text-dim); }
+.sidebar .playlists { flex: 1; min-height: 0; overflow-y: auto; padding: 0 8px; }
+/* UiLib ListItem rows */
+.sidebar .playlists .ui-list__row + .ui-list__row { border-top: 0; }
+.sidebar .playlists .ui-list-item { min-height: 0; padding: 8px; border-radius: 6px; }
+.sidebar .playlists .ui-list-item:hover { background: var(--surface); }
+.sidebar .playlists .ui-list-item.active { background: var(--surface-hover); }
+.sidebar .playlists .ui-list-item__subtitle { font-size: 13px; color: var(--text-dim); }
+.sidebar .playlists .ui-list-item__title, .sidebar .playlists .ui-list-item__subtitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar .playlists .active .ui-list-item__title { color: var(--accent); }
+.sidebar .thumb { flex: none; display: block; width: 48px; }
+.sidebar .thumb .cover { border-radius: 4px; box-shadow: none; }
+.sidebar .empty { flex: 1; margin: 8px; padding: 16px; border-radius: 8px; background: var(--surface); align-self: stretch; }
+.sidebar .empty p { margin: 0 0 12px; font-weight: 700; }
+.sidebar footer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 10px 10px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.sidebar .count, .sidebar .scan { flex: 1; }
+.sidebar .scan-bar { height: 3px; margin-top: 6px; margin-right: 10px; border-radius: 2px; background: var(--surface); }
+.sidebar .scan-bar div { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.2s; }
+
+/* Icon rail in narrow windows; the labels move to tooltips. Not in the phone menu. */
+@media (max-width: 900px) {
+  .sidebar:not(.menu) { width: 64px; }
+  .sidebar:not(.menu) .text, .sidebar:not(.menu) .ui-list-item__text, .sidebar:not(.menu) .label,
+  .sidebar:not(.menu) .count, .sidebar:not(.menu) .empty { display: none; }
+  .sidebar:not(.menu) .brand { justify-content: center; padding: 16px 0 4px; }
+  .sidebar:not(.menu) nav { padding: 8px 4px 10px; }
+  .sidebar:not(.menu) nav button { justify-content: center; padding: 10px 0; }
+  .sidebar:not(.menu) header { justify-content: center; padding: 10px 0 6px; }
+  .sidebar:not(.menu) .playlists { padding: 0 4px; }
+  .sidebar:not(.menu) .playlists .ui-list-item { justify-content: center; padding: 6px 4px; }
+  .sidebar:not(.menu) .thumb { width: 44px; }
+  .sidebar:not(.menu) footer { flex-direction: column; gap: 4px; padding: 8px 0; }
+  .sidebar:not(.menu) .scan { flex: none; width: 40px; font-size: 0; }
+  .sidebar:not(.menu) .scan-bar { margin: 0; }
+}
+.sidebar.menu .library { flex: none; }
+.sidebar.menu .playlists { overflow: visible; }
+@media (max-height: 520px) {
+  .sidebar .brand { display: none; }
+}

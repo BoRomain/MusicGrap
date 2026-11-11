@@ -1,5 +1,5 @@
 # Live reload on a USB-connected phone: the app loads the UI from the Vite dev server
-# (through `adb reverse`), so Svelte/CSS edits show up without rebuilding the APK.
+# (through `adb reverse`), so React/CSS edits show up without rebuilding the APK.
 # Usage: ./scripts/android-live.ps1          install the live APK, then run Vite (Ctrl+C to stop)
 #        ./scripts/android-live.ps1 -NoInstall   only re-arm adb reverse and run Vite
 # The Go core (.aar) must already be built (./scripts/build-android.ps1 once).

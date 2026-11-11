@@ -1,0 +1,39 @@
+.media-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
+}
+.media-card:hover, .media-card:focus-visible { background: var(--surface-hover); outline: none; }
+.media-card .art { position: relative; margin-bottom: 8px; }
+.media-card .play {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #111;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.media-card .play:hover { transform: scale(1.06) !important; }
+.media-card:hover .play, .media-card:focus-within .play { opacity: 1; transform: none; }
+@media (hover: none) {
+  .media-card .play { opacity: 1; transform: none; width: 40px; height: 40px; }
+}
+.media-card .title, .media-card .sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.media-card .title { font-weight: 700; }
+.media-card.round .title, .media-card.round .sub { text-align: center; }
+.media-card .sub { font-size: 13px; color: var(--text-dim); }

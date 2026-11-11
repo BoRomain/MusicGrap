@@ -1,0 +1,112 @@
+.main {
+  --sticky-top: 66px;
+  position: relative;
+  min-height: 0;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg2) 45%, transparent) 0, rgba(0, 0, 0, 0.3) 340px);
+  backdrop-filter: blur(20px);
+}
+.main > .top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: color-mix(in srgb, var(--bg1) 75%, transparent);
+  backdrop-filter: blur(16px);
+}
+.main .nav {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+}
+.main .nav:disabled { opacity: 0.4; cursor: default; }
+.main .nav.menu { width: 42px; height: 42px; }
+/* UiLib TextField, as a pill search box. */
+.main .search { width: min(420px, 100%); margin-left: 8px; }
+.main .search .ui-field__box {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background: var(--surface-hover);
+  color: var(--text-dim);
+}
+.main .search .ui-field__box:focus-within { border-color: var(--text); color: var(--text); }
+.main .search .ui-field__input { height: 38px; font-size: 14px; }
+.main .search .clear { display: grid; color: var(--text-dim); }
+.main .page { padding: 0 24px 32px; }
+.main .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--text-dim);
+}
+.main .empty h2 { margin: 8px 0 0; color: var(--text); }
+.main .empty p { margin: 0 0 12px; }
+
+/* Shared by the views */
+.page h2.section { margin: 28px 0 8px; font-size: 24px; }
+.page .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  margin: 0 -12px;
+}
+.page .missing { padding: 24px 0 40px; color: var(--text-dim); }
+.page .missing h3 { margin: 0 0 6px; color: var(--text); }
+.page .missing p { margin: 0; }
+.albums-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.albums-head .section { flex: 1; }
+.albums-head .ui-chip { min-height: 32px; padding: 5px 14px; font-size: 13px; }
+.page .browse {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+.page .browse button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--c);
+  font-size: 22px;
+  font-weight: 800;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.15s;
+}
+.page .browse button:hover { transform: scale(1.02); }
+.page .browse span { font-size: 13px; font-weight: 400; opacity: 0.85; }
+.page .none { padding: 60px 0; text-align: center; }
+.page .none p, .page .more { color: var(--text-dim); }
+
+@media (max-width: 640px) {
+  .main { --sticky-top: 62px; }
+  /* Opaque on phones: the Android WebView barely blurs, so scrolled rows showed through the search field.
+     The mix matches the top of .main's gradient. */
+  .main > .top {
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--bg2) 45%, var(--bg1));
+    box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.5);
+  }
+  .main .nav:not(.menu) { display: none; }
+  .main .search { margin-left: 0; flex: 1; }
+  .main .page { padding: 0 12px 24px; }
+  .page h2.section { margin-top: 20px; font-size: 20px; }
+  .page .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); margin: 0 -8px; }
+  .page .browse { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .page .browse button { height: 96px; padding: 12px; font-size: 18px; }
+}
