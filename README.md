@@ -1,6 +1,6 @@
 # Wave — lecteur de musique
 
-Lecteur de musique en Go (Wails + Svelte) pour Windows et Linux, avec une version Android (Capacitor).
+Lecteur de musique en Go (Wails + React) pour Windows et Linux, avec une version Android (Capacitor).
 
 - Égaliseur 10 bandes (31 Hz → 16 kHz, ±12 dB) avec presets
 - Mode **slowed + reverb** : vitesse 0.5x–1x (le pitch descend comme un vinyle ralenti), reverb Freeverb réglable
@@ -51,7 +51,7 @@ wails build -tags webkit2_41    # Linux   → build/bin/musicplayer
 
 ## Android
 
-Même moteur Go (compilé en `.aar` par gomobile) et même interface Svelte (WebView Capacitor).
+Même moteur Go (compilé en `.aar` par gomobile) et même interface React (WebView Capacitor).
 Lecture en arrière-plan, contrôles dans la notification, sur l'écran de verrouillage et au casque ; pause quand le casque est débranché.
 La bibliothèque vient d'un dossier choisi dans le sélecteur Android (stockage interne ou carte SD, pas les dossiers cloud).
 
@@ -87,5 +87,5 @@ internal/library          scan du dossier, tags, pochettes, cache JSON
 internal/playlist         playlists (JSON)
 internal/palette          couleurs extraites des pochettes
 internal/settings         réglages persistés
-frontend/src              interface Svelte 5 ; lib/backend choisit Wails ou Capacitor au build
+frontend/src              interface React + TypeScript (UiLib, Zustand) ; lib/backend choisit Wails ou Capacitor au build
 ```

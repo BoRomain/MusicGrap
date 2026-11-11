@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEven
 import { isMobile } from '$backend'
 import { clamp, fmtDb, fmtHz, MAX_DB, MAX_HZ, MIN_HZ, type Point } from './eqCurve'
 import { cx } from './cx'
-import './EqCurve.css'
+import './EqGraph.css'
 
 const NAMES = ['Graves', 'Médiums', 'Aigus']
 
@@ -19,7 +19,7 @@ const label = (hz: number) => (hz >= 1000 ? `${hz / 1000}k` : `${hz}`)
  * Draggable 3-point EQ curve (no UiLib equivalent). Shows `curve`, with the points at `points`;
  * onMove gets a point index and its wanted position, the parent clamps and stores it.
  */
-export function EqCurve({
+export function EqGraph({
   curve,
   points,
   bands,

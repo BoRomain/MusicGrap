@@ -97,7 +97,7 @@ export function Main() {
               <>
                 <h2>Aucune musique trouvée sur l'appareil</h2>
                 <p>Autorise l'accès à la musique, ou ajoute des fichiers audio sur ton téléphone.</p>
-                <Button size="lg" onClick={scanLibrary}>
+                <Button variant="primary" size="lg" onClick={scanLibrary}>
                   Rechercher la musique
                 </Button>
               </>
@@ -105,7 +105,7 @@ export function Main() {
               <>
                 <h2>Aucune musique pour l'instant</h2>
                 <p>Choisis le dossier où se trouve ta musique (MP3, FLAC, OGG, WAV).</p>
-                <Button size="lg" icon={<Icon name="folder" size={18} />} onClick={chooseFolder}>
+                <Button variant="primary" size="lg" icon={<Icon name="folder" size={18} />} onClick={chooseFolder}>
                   Choisir un dossier
                 </Button>
               </>

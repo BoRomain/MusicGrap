@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ChipGroup } from '@romain/uilib'
 import { isMobile, SetEQGains, SetEQPreset } from '$backend'
 import { bandsCurve, clamp, DEFAULT_HZ, MAX_DB, pointsCurve, sample, ZONES, type Point } from './eqCurve'
-import { EqCurve } from './EqCurve'
+import { EqGraph } from './EqGraph'
 import { patchSettings, useApp } from './store'
 
 const PRESET_NAMES = ['Flat', 'Bass Boost', 'Treble Boost', 'Vocal', 'Rock', 'Electronic', 'Hip-Hop', 'Lo-Fi']
@@ -74,7 +74,7 @@ export function Equalizer() {
         onChange={applyPreset}
       />
       {custom && <span className="eq-custom">Personnalisé</span>}
-      <EqCurve curve={curve} points={shown} bands={bands} onMove={move} />
+      <EqGraph curve={curve} points={shown} bands={bands} onMove={move} />
       <span className="hint">Glissez les points. {isMobile ? 'Double tap' : 'Double-clic'} : retour à 0 dB.</span>
     </div>
   )
