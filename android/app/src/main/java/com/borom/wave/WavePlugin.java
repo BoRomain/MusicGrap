@@ -2,18 +2,16 @@ package com.borom.wave;
 
 import android.Manifest;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.DocumentsContract;
-
-import androidx.activity.result.ActivityResult;
+import android.provider.MediaStore;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.getcapacitor.annotation.ActivityCallback;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
@@ -36,8 +34,6 @@ import java.util.concurrent.Executors;
     }
 )
 public class WavePlugin extends Plugin {
-    private static final String STORAGE_AUTHORITY = "com.android.externalstorage.documents";
-
     private final ExecutorService calls = Executors.newSingleThreadExecutor();
     /** False while the app is in the background: the hidden page doesn't need progress ticks. */
     private volatile boolean visible = true;
@@ -61,7 +57,12 @@ public class WavePlugin extends Plugin {
     protected void handleOnPause() { visible = false; }
 
     @Override
-    protected void handleOnResume() { visible = true; }
+    protected void handleOnResume() {
+        visible = true;
+        // Music added while away (download, copy) shows up on return. Unchanged files
+        // come from the cache, so this is cheap; never asks for the permission.
+        if (mediaGranted()) scan(null);
+    }
 
     @Override
     protected void handleOnDestroy() {
@@ -91,17 +92,22 @@ public class WavePlugin extends Plugin {
         call.resolve(r);
     }
 
-    // ---- Music folder: permissions, then the system folder picker ----
+    // ---- Library: the whole device's music, from the system media index ----
 
     /** Media read permission for this Android version. */
     private static String mediaAlias() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? "audio" : "storage";
     }
 
+    private boolean mediaGranted() {
+        return getPermissionState(mediaAlias()) == PermissionState.GRANTED;
+    }
+
+    /** Asks for the media permission if needed, then rescans the library. */
     @PluginMethod
-    public void chooseFolder(PluginCall call) {
-        if (getPermissionState(mediaAlias()) == PermissionState.GRANTED) {
-            openPicker(call);
+    public void scanLibrary(PluginCall call) {
+        if (mediaGranted()) {
+            scan(call);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // Asked together so the notification controls work from the first track.
             requestPermissionForAliases(new String[] { "audio", "notifications" }, call, "permissionsDone");
@@ -112,56 +118,45 @@ public class WavePlugin extends Plugin {
 
     @PermissionCallback
     private void permissionsDone(PluginCall call) {
-        if (getPermissionState(mediaAlias()) != PermissionState.GRANTED) {
+        if (!mediaGranted()) {
             call.reject("Permission d'accès à la musique refusée");
             return;
         }
-        openPicker(call);
+        scan(call);
     }
 
-    private void openPicker(PluginCall call) {
-        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        i.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
-            DocumentsContract.buildDocumentUri(STORAGE_AUTHORITY, "primary:Music"));
-        startActivityForResult(call, i, "folderPicked");
-    }
-
-    @ActivityCallback
-    private void folderPicked(PluginCall call, ActivityResult result) {
-        Intent data = result.getData();
-        Uri uri = data == null ? null : data.getData();
-        String dir = uri == null ? null : treeToPath(uri);
-        JSObject r = new JSObject();
-        if (dir == null) {
-            // Cancelled, or a location that is not a plain folder (cloud provider...).
-            r.put("dir", "");
-            call.resolve(r);
-            return;
-        }
+    /** Gives the Go core every music file the system knows (internal storage and SD cards). */
+    private void scan(PluginCall call) {
         calls.execute(() -> {
             try {
-                WaveCore.call("SetMusicFolder", new JSONArray().put(dir).toString());
-                r.put("dir", dir);
-                call.resolve(r);
+                WaveCore.call("ScanFiles", new JSONArray().put(musicFiles()).toString());
+                if (call != null) call.resolve();
             } catch (Exception e) {
-                call.reject(e.getMessage());
+                if (call != null) call.reject(e.getMessage());
             }
         });
     }
 
     /**
-     * Turns a folder picked through the storage access framework into a file path,
-     * which the Go scanner reads directly (allowed for media files with READ_MEDIA_AUDIO).
-     * "primary:Music/Rock" gives /storage/emulated/0/Music/Rock, "1234-ABCD:Music" gives /storage/1234-ABCD/Music.
+     * File paths of the audio the media index marks as music, like the system music apps
+     * (no ringtones, notifications or voice notes). The Go scanner reads them directly,
+     * which READ_MEDIA_AUDIO allows for media files.
      */
-    static String treeToPath(Uri uri) {
-        if (!STORAGE_AUTHORITY.equals(uri.getAuthority())) return null;
-        String id = DocumentsContract.getTreeDocumentId(uri);
-        int colon = id.indexOf(':');
-        if (colon < 0) return null;
-        String volume = id.substring(0, colon);
-        String rel = id.substring(colon + 1);
-        String root = "primary".equalsIgnoreCase(volume) ? "/storage/emulated/0" : "/storage/" + volume;
-        return rel.isEmpty() ? root : root + "/" + rel;
+    private JSONArray musicFiles() {
+        Uri uri = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+            ? MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            : MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.Audio.Media.DATA };
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+        JSONArray paths = new JSONArray();
+        try (Cursor c = getContext().getContentResolver().query(uri, projection, selection, null, null)) {
+            if (c == null) return paths;
+            int col = c.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+            while (c.moveToNext()) {
+                String path = c.getString(col);
+                if (path != null && !path.isEmpty()) paths.put(path);
+            }
+        }
+        return paths;
     }
 }

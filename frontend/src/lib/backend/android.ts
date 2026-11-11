@@ -7,7 +7,7 @@ import type { core, library, playlist } from '../../../wailsjs/go/models'
 
 interface WavePlugin {
   call(opts: { method: string; args: string }): Promise<{ result: string }>
-  chooseFolder(): Promise<{ dir: string }>
+  scanLibrary(): Promise<void>
   coverBaseUrl(): Promise<{ url: string }>
   addListener(event: 'event', fn: (e: { name: string; payload: string }) => void): Promise<{ remove: () => void }>
 }
@@ -31,8 +31,10 @@ export const GetInitialState = async () => {
   await ready
   return call<core.InitState>('GetInitialState')
 }
-export const ChooseMusicFolder = () => Wave.chooseFolder().then((r) => r.dir)
-export const ScanLibrary = () => call('ScanLibrary')
+// No music folder on Android: the library is all the music the system indexes.
+export const ChooseMusicFolder = async () => ''
+/** Asks for the media permission if needed, then rescans the device's music. */
+export const ScanLibrary = () => Wave.scanLibrary()
 export const GetTracks = () => call<library.Track[]>('GetTracks')
 export const GetQueue = () => call<library.Track[]>('GetQueue')
 export const PlayQueue = (ids: string[], start: number) => call('PlayQueue', ids, start)

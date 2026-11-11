@@ -106,6 +106,23 @@ func TestScanAndPlayRealFile(t *testing.T) {
 	}
 }
 
+func TestScanFilesUsesOnlyTheGivenSupportedFiles(t *testing.T) {
+	dir := t.TempDir()
+	a, b := filepath.Join(dir, "a.wav"), filepath.Join(dir, "b.wav")
+	writeTone(t, a)
+	writeTone(t, b) // on disk but not listed: left out
+	txt := filepath.Join(dir, "notes.txt")
+	os.WriteFile(txt, []byte("ignored"), 0o644)
+
+	lib := New(filepath.Join(dir, "library.json"))
+	if err := lib.ScanFiles([]string{a, txt, filepath.Join(dir, "missing.wav")}, nil); err != nil {
+		t.Fatal(err)
+	}
+	if tracks := lib.Tracks(); len(tracks) != 1 || tracks[0].Path != a {
+		t.Fatalf("tracks = %+v", tracks)
+	}
+}
+
 func TestReleaseDate(t *testing.T) {
 	for in, want := range map[string]string{
 		"2021-05-14T00:00:00": "2021-05-14",

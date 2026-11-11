@@ -184,6 +184,9 @@ func dispatch(b *core.Core, method string, raw []json.RawMessage) (any, error) {
 		call = func() (any, error) { b.SetMusicFolder(dir); return nil, nil }
 	case "ScanLibrary":
 		call = func() (any, error) { b.ScanLibrary(); return nil, nil }
+	case "ScanFiles":
+		paths := strs(0)
+		call = func() (any, error) { b.ScanFiles(paths); return nil, nil }
 	case "GetTracks":
 		call = func() (any, error) { return b.GetTracks(), nil }
 	case "GetQueue":

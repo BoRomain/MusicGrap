@@ -167,6 +167,19 @@ func (l *Library) Scan(dir string, progress func(done, total int)) error {
 	if err != nil {
 		return err
 	}
+	return l.ScanFiles(files, progress)
+}
+
+// ScanFiles reads the given files (unsupported formats are skipped) and makes
+// them the whole library, reusing cached entries for unchanged files.
+// Used on Android, where the system media index gives the file list.
+func (l *Library) ScanFiles(paths []string, progress func(done, total int)) error {
+	files := make([]string, 0, len(paths))
+	for _, p := range paths {
+		if audio.Supported(strings.ToLower(filepath.Ext(p))) {
+			files = append(files, p)
+		}
+	}
 
 	cached := map[string]Track{}
 	for _, t := range l.Tracks() {

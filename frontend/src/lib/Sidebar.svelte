@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { CreatePlaylist, ScanLibrary } from '$backend'
-  import { app, chooseFolder, coverIds, go, lib, plural, route, type Route } from './store.svelte'
+  import { CreatePlaylist, isMobile } from '$backend'
+  import { app, chooseFolder, coverIds, go, lib, plural, route, scanLibrary, type Route } from './store.svelte'
   import Cover from './Cover.svelte'
   import Icon from './Icon.svelte'
 
@@ -78,12 +78,19 @@
       {:else}
         <span class="count">{plural(app.tracks.length, 'titre')}</span>
       {/if}
-      <button class="icon" title="Rescanner le dossier" onclick={() => ScanLibrary()} disabled={!app.settings.musicDir}>
+      <button
+        class="icon"
+        title={isMobile ? 'Actualiser la bibliothèque' : 'Rescanner le dossier'}
+        onclick={scanLibrary}
+        disabled={!isMobile && !app.settings.musicDir}
+      >
         <Icon name="refresh" size={18} />
       </button>
-      <button class="icon" title="Choisir le dossier musique" onclick={chooseFolder}>
-        <Icon name="folder" size={18} />
-      </button>
+      {#if !isMobile}
+        <button class="icon" title="Choisir le dossier musique" onclick={chooseFolder}>
+          <Icon name="folder" size={18} />
+        </button>
+      {/if}
     </footer>
   </div>
 </aside>

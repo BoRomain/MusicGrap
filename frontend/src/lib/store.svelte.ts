@@ -1,4 +1,4 @@
-import { ChooseMusicFolder, PlayQueue, SetShuffle, WindowFullscreen, WindowUnfullscreen } from '$backend'
+import { ChooseMusicFolder, PlayQueue, ScanLibrary, SetShuffle, WindowFullscreen, WindowUnfullscreen } from '$backend'
 import type { audio, core, library, playlist, settings } from '../../wailsjs/go/models'
 
 export type Panel = 'queue' | 'eq' | 'slowed' | 'fade'
@@ -162,6 +162,16 @@ export async function chooseFolder() {
     const dir = await ChooseMusicFolder()
     app.notice = ''
     if (dir) app.settings.musicDir = dir
+  } catch (e) {
+    app.notice = String(e instanceof Error ? e.message : e)
+  }
+}
+
+/** Rescans the library (on Android, asks for the media permission first if needed). */
+export async function scanLibrary() {
+  try {
+    await ScanLibrary()
+    app.notice = ''
   } catch (e) {
     app.notice = String(e instanceof Error ? e.message : e)
   }

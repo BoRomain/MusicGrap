@@ -211,7 +211,24 @@ func (a *Core) SetMusicFolder(dir string) {
 func (a *Core) ScanLibrary() {
 	a.mu.Lock()
 	dir := a.settings.MusicDir
-	if a.scanning || dir == "" {
+	a.mu.Unlock()
+	if dir == "" {
+		return
+	}
+	a.scan(func(progress func(done, total int)) error { return a.lib.Scan(dir, progress) })
+}
+
+// ScanFiles replaces the library with the given files, in the background
+// (Android: the list comes from the system media index). Same events as ScanLibrary.
+func (a *Core) ScanFiles(paths []string) {
+	a.scan(func(progress func(done, total int)) error { return a.lib.ScanFiles(paths, progress) })
+}
+
+// scan runs one library scan at a time in the background; a call made while
+// another scan runs is dropped.
+func (a *Core) scan(run func(progress func(done, total int)) error) {
+	a.mu.Lock()
+	if a.scanning {
 		a.mu.Unlock()
 		return
 	}
@@ -224,7 +241,7 @@ func (a *Core) ScanLibrary() {
 			a.scanning = false
 			a.mu.Unlock()
 		}()
-		err := a.lib.Scan(dir, func(done, total int) {
+		err := run(func(done, total int) {
 			a.emit("library:scan-progress", ScanProgress{done, total})
 		})
 		if err != nil {

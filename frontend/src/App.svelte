@@ -3,7 +3,7 @@
   import { fade, fly } from 'svelte/transition'
   import { coverUrl as coverOf, EventsOn, GetInitialState, isMobile, Next, Prev, onBackButton, Seek, TogglePause } from '$backend'
   import type { audio, core, library, playlist } from '../wailsjs/go/models'
-  import { app, back, forward, nav, onFullscreenLeft, toggleCinema, toggleFullscreen } from './lib/store.svelte'
+  import { app, back, forward, nav, onFullscreenLeft, scanLibrary, toggleCinema, toggleFullscreen } from './lib/store.svelte'
   import { applyPalette } from './lib/theme'
   import Sidebar from './lib/Sidebar.svelte'
   import Main from './lib/Main.svelte'
@@ -29,6 +29,8 @@
       app.audioError = s.audioError
       app.state = s.state
       setNow(s.now ?? null)
+      // Android has no music folder: the library follows the device's music.
+      if (isMobile) scanLibrary()
     })
 
     const offs = [

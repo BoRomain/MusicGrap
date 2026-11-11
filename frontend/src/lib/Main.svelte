@@ -1,6 +1,6 @@
 <script lang="ts">
   import { isMobile } from '$backend'
-  import { app, back, chooseFolder, forward, go, nav, route } from './store.svelte'
+  import { app, back, chooseFolder, forward, go, nav, route, scanLibrary } from './store.svelte'
   import Icon from './Icon.svelte'
   import Albums from './views/Albums.svelte'
   import AlbumPage from './views/AlbumPage.svelte'
@@ -54,9 +54,15 @@
     {#if app.tracks.length === 0 && !app.scan}
       <div class="empty">
         <Icon name="note" size={56} />
-        <h2>Aucune musique pour l'instant</h2>
-        <p>Choisis le dossier où se trouve ta musique (MP3, FLAC, OGG, WAV).</p>
-        <button class="primary" onclick={chooseFolder}>Choisir un dossier</button>
+        {#if isMobile}
+          <h2>Aucune musique trouvée sur l'appareil</h2>
+          <p>Autorise l'accès à la musique, ou ajoute des fichiers audio sur ton téléphone.</p>
+          <button class="primary" onclick={scanLibrary}>Rechercher la musique</button>
+        {:else}
+          <h2>Aucune musique pour l'instant</h2>
+          <p>Choisis le dossier où se trouve ta musique (MP3, FLAC, OGG, WAV).</p>
+          <button class="primary" onclick={chooseFolder}>Choisir un dossier</button>
+        {/if}
       </div>
     {:else if r.view === 'albums'}
       <Albums />
