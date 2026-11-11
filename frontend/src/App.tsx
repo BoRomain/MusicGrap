@@ -93,6 +93,16 @@ export function App() {
   const theme = uiTheme(now?.palette ?? defaultPalette)
 
   useEffect(() => {
+    // Opened in a plain browser (Vite's localhost:5173), the Wails bindings are missing:
+    // show it instead of crashing the whole tree.
+    try {
+      return subscribe()
+    } catch (e) {
+      set({ notice: `Backend indisponible (${e instanceof Error ? e.message : e}). Ouvre l'app avec wails dev, pas http://localhost:5173.` })
+    }
+  }, [])
+
+  function subscribe() {
     GetInitialState().then((s) => {
       setTracks(s.tracks ?? [])
       set({
@@ -128,7 +138,7 @@ export function App() {
       window.removeEventListener('mouseup', onMouse)
       document.removeEventListener('fullscreenchange', onFullscreenChange)
     }
-  }, [])
+  }
 
   return (
     <ThemeProvider className="app-root" accent={theme.accent} tokens={theme.tokens}>
