@@ -1,0 +1,109 @@
+.track-table { --cols: 44px minmax(0, 5fr) minmax(0, 3fr) 90px; }
+.track-table.noalbum { --cols: 44px minmax(0, 1fr) 90px; }
+.track-table .head, .track-table .row {
+  display: grid;
+  grid-template-columns: var(--cols);
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+}
+.track-table .head {
+  position: sticky;
+  top: var(--sticky-top, 0);
+  z-index: 1;
+  height: 36px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg1) 85%, black);
+}
+.track-table .th {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 0;
+}
+.track-table button.th:hover, .track-table .th.sorted { color: var(--text); }
+.track-table .arrow { font-size: 8px; color: var(--accent); }
+.track-table .th.num { justify-content: center; }
+.track-table .th.dur { justify-content: flex-end; }
+.track-table .disc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 12px 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.track-table .row {
+  min-height: 56px;
+  border-radius: 6px;
+  cursor: default;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 56px;
+}
+.track-table .row:hover { background: var(--surface); }
+.track-table .row.selected, .track-table .row:focus-visible { background: var(--surface-hover); outline: none; }
+.track-table .num { position: relative; display: grid; place-items: center; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.track-table .rowplay { position: absolute; inset: 0; display: none; place-items: center; color: var(--text); }
+.track-table .row:hover .rowplay { display: grid; }
+.track-table .row:hover .num > :not(.rowplay) { visibility: hidden; }
+.track-table .main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.track-table .thumb { flex: none; width: 40px; }
+.track-table .thumb .cover { border-radius: 4px; box-shadow: none; }
+.track-table .names { display: flex; flex-direction: column; min-width: 0; }
+.track-table .title, .track-table .sub, .track-table .album { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Long titles wrap on up to 2 lines, then end with an ellipsis. */
+.track-table .title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+.track-table .current .title, .track-table .current .n { color: var(--accent); }
+.track-table .sub, .track-table .album { font-size: 13px; color: var(--text-dim); text-align: left; }
+.track-table .link { max-width: 100%; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit; }
+.track-table .link:hover { color: var(--text); text-decoration: underline; }
+.track-table .row:hover .sub, .track-table .row:hover .album { color: var(--text); }
+.track-table .dur {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.track-table .more { display: grid; color: var(--text-dim); visibility: hidden; }
+.track-table .more:hover { color: var(--text); }
+.track-table .row:hover .more, .track-table .row.selected .more { visibility: visible; }
+@media (hover: none) {
+  .track-table .more { visibility: visible; }
+}
+.track-table .bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.track-table .bars i { width: 3px; background: var(--accent); animation: bounce 0.9s ease-in-out infinite; }
+.track-table .bars i:nth-child(2) { animation-delay: -0.3s; }
+.track-table .bars i:nth-child(3) { animation-delay: -0.6s; }
+@keyframes bounce { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+/* Last, so they override the rules above. The album column goes first, then the numbers. */
+@media (max-width: 700px) {
+  .track-table, .track-table.noalbum { --cols: 36px minmax(0, 1fr) 76px; }
+  .track-table .album, .track-table .th.col-album { display: none; }
+  .track-table .head, .track-table .row { gap: 8px; padding: 0 8px; }
+}
+@media (max-width: 480px) {
+  .track-table, .track-table.noalbum { --cols: minmax(0, 1fr) 64px; }
+  .track-table .num { display: none; }
+  .track-table .thumb { width: 36px; }
+  .track-table .dur { gap: 4px; }
+}
+/* Phones: one line per title keeps the rows even and the list dense. */
+@media (max-width: 640px) {
+  .track-table .title { display: block; white-space: nowrap; }
+}
