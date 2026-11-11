@@ -1,0 +1,53 @@
+.transport { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+.transport.cinema { flex-direction: column-reverse; gap: 14px; }
+.transport .controls { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; }
+.transport .buttons { display: flex; align-items: center; gap: 18px; }
+.transport.cinema .buttons { gap: 28px; }
+.transport .extra { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+.transport .buttons button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  color: var(--text-dim);
+  transition: color 0.12s, transform 0.12s;
+}
+.transport .buttons button:hover { color: var(--text); transform: scale(1.06); }
+.transport .buttons .small.on { color: var(--accent); }
+.transport .buttons .small.on::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.transport .one { position: absolute; top: -2px; right: -2px; font-size: 9px; font-weight: 800; }
+.transport .buttons .play {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg1);
+}
+.transport.cinema .buttons .play { width: 48px; height: 48px; }
+.transport .buttons .play:hover { color: var(--bg1); }
+.transport .seek {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 620px;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.transport.cinema .seek { max-width: none; font-size: 12px; }
+.transport .seek span { min-width: 36px; text-align: center; }
+@media (max-width: 640px) {
+  .transport { gap: 2px; }
+  .transport .buttons { gap: 12px; }
+  .transport.cinema .buttons { gap: 18px; }
+  .transport .seek { max-width: none; }
+}
