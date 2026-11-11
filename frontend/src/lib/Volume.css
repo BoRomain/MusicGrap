@@ -1,0 +1,8 @@
+.volume { display: flex; align-items: center; gap: 6px; width: 130px; }
+.volume > button { display: grid; padding: 4px; color: var(--text-dim); transition: color 0.12s; }
+.volume > button:hover { color: var(--text); }
+/* Only the mute button in narrow windows (outside cinema mode, which has room for it). */
+@media (max-width: 900px) {
+  .bar .volume { width: auto; }
+  .bar .volume input { display: none; }
+}

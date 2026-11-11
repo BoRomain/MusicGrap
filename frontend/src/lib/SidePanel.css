@@ -1,0 +1,44 @@
+.side-panel {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--bar-h) + 16px);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  max-height: min(680px, calc(100vh - var(--bar-h) - 60px));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg1) 70%, rgba(20, 20, 20, 0.85));
+  backdrop-filter: blur(28px) saturate(1.3);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: side-panel-in 0.18s ease;
+}
+@keyframes side-panel-in { from { opacity: 0; transform: translateY(16px); } }
+.side-panel nav { display: flex; align-items: center; gap: 6px; padding: 8px; border-bottom: 1px solid var(--border); }
+.side-panel nav .ui-segmented { flex: 1; }
+.side-panel nav .ui-segmented__item { font-size: 13px; padding: 6px 2px; }
+.side-panel .content { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+.side-panel .now { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.side-panel .thumb { flex: none; width: 56px; }
+.side-panel .thumb .cover { border-radius: 4px; }
+.side-panel .names { display: flex; flex-direction: column; min-width: 0; }
+.side-panel .names > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side-panel .kind { font-size: 11px; color: var(--accent); font-weight: 700; }
+.side-panel .artist { font-size: 13px; color: var(--text-dim); }
+.side-panel h3 { margin: 0 0 8px; font-size: 15px; }
+
+/* Panel contents */
+.panel-stack { display: flex; flex-direction: column; gap: 14px; }
+.panel-stack .hint { display: block; margin: -4px 0 0; font-size: 12px; color: var(--text-dim); }
+.eq-custom { margin-top: -6px; font-size: 12px; font-weight: 700; color: var(--accent); }
+.queue .ui-list-item { min-height: 0; padding: 6px 4px; font-size: 13px; }
+.queue .current .ui-list-item__title { color: var(--accent); font-weight: 700; }
+.queue .dur { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.queue-empty { color: var(--text-dim); font-size: 13px; }
+
+@media (max-width: 640px) {
+  .side-panel { left: 8px; right: 8px; bottom: calc(var(--bar-h) + 8px); width: auto; max-width: none; }
+  .side-panel .content { padding: 12px; }
+}
