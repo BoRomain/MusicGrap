@@ -1,0 +1,72 @@
+.ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ui-field__label {
+  font-size: var(--ui-font-size-sm);
+  font-weight: 500;
+  color: var(--ui-text-muted);
+}
+
+.ui-field__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  min-height: 44px;
+  padding: 0 var(--ui-space-3);
+  background: var(--ui-surface-2);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  transition: border-color var(--ui-duration) var(--ui-ease);
+}
+
+.ui-field__box:focus-within {
+  border-color: var(--ui-accent);
+}
+
+.ui-field--error .ui-field__box {
+  border-color: var(--ui-danger);
+}
+
+.ui-field__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 42px;
+  font: inherit;
+  /* 16px avoids the zoom-on-focus of mobile browsers. */
+  font-size: 16px;
+  color: var(--ui-text);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+.ui-field__input::placeholder {
+  color: var(--ui-text-dim);
+}
+
+.ui-field__adorn {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ui-text-muted);
+  flex-shrink: 0;
+}
+
+.ui-field__adorn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ui-field__msg {
+  font-size: var(--ui-font-size-sm);
+  color: var(--ui-text-muted);
+}
+
+.ui-field--error .ui-field__msg {
+  color: var(--ui-danger);
+}

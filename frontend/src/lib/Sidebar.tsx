@@ -1,4 +1,4 @@
-import { Button, IconButton, List, ListItem } from '@romain/uilib'
+import { Button, IconButton, List, ListItem } from '../uilib'
 import { CreatePlaylist, isMobile } from '$backend'
 import { chooseFolder, coverIds, go, playlistTracks, plural, scanLibrary, setDrawer, useApp, useRoute, type Route } from './store'
 import { cx } from './cx'

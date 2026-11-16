@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { IconButton, SegmentedControl } from '@romain/uilib'
+import { IconButton, SegmentedControl } from '../uilib'
 import { artistName, setPanel, useApp, type Panel } from './store'
 import { Cover } from './Cover'
 import { Icon } from './Icon'

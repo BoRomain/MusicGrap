@@ -1,0 +1,91 @@
+.ui-track {
+  display: flex;
+  --ui-track-fill: var(--ui-fill);
+  --ui-track-fill-hover: var(--ui-fill-hover);
+  --ui-track-edge-width: 3px;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ui-track--interactive {
+  cursor: ew-resize;
+  /* Vertical scroll stays native on touch; horizontal drags go to the slider. */
+  touch-action: pan-y;
+}
+
+.ui-track--disabled {
+  opacity: 0.5;
+}
+
+.ui-track__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--ui-fill-from) * 100%);
+  width: calc(var(--ui-fill-size) * 100%);
+  background: var(--ui-track-fill);
+  pointer-events: none;
+}
+
+.ui-track__edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--ui-track-edge-width);
+  left: calc(var(--ui-p) * (100% - var(--ui-track-edge-width)));
+  background: var(--ui-accent);
+  pointer-events: none;
+}
+
+/* Hover (mouse only) and dragging (mouse + touch, set by usePointerDrag) feedback. */
+.ui-track__fill {
+  transition: background var(--ui-duration) var(--ui-ease);
+}
+
+.ui-track__edge {
+  transition:
+    width var(--ui-duration) var(--ui-ease),
+    box-shadow var(--ui-duration) var(--ui-ease);
+}
+
+.ui-track--interactive {
+  transition: border-color var(--ui-duration) var(--ui-ease);
+}
+
+@media (hover: hover) {
+  .ui-track--interactive:hover {
+    --ui-track-edge-width: var(--ui-track-edge-width-hover, 5px);
+    border-color: rgba(var(--ui-accent-rgb), 0.45);
+  }
+
+  .ui-track--interactive:hover .ui-track__fill {
+    background: var(--ui-track-fill-hover);
+  }
+
+  .ui-track--interactive:hover .ui-track__edge {
+    box-shadow: 0 0 12px rgba(var(--ui-accent-rgb), 0.6);
+  }
+}
+
+.ui-track--interactive[data-dragging] {
+  --ui-track-edge-width: var(--ui-track-edge-width-hover, 5px);
+  border-color: rgba(var(--ui-accent-rgb), 0.6);
+}
+
+.ui-track--interactive[data-dragging] .ui-track__fill {
+  background: var(--ui-track-fill-hover);
+}
+
+.ui-track--interactive[data-dragging] .ui-track__edge {
+  box-shadow: 0 0 16px rgba(var(--ui-accent-rgb), 0.8);
+}
+
+.ui-track__content {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}

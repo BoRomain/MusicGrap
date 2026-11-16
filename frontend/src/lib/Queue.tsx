@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { List, ListItem } from '@romain/uilib'
+import { List, ListItem } from '../uilib'
 import { GetQueue } from '$backend'
 import type { library } from '../../wailsjs/go/models'
 import { fmtTime, useApp } from './store'

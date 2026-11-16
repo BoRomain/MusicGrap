@@ -1,0 +1,38 @@
+.ui-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+
+.ui-chip {
+  font: inherit;
+  font-size: var(--ui-font-size-md);
+  font-weight: 500;
+  color: var(--ui-text);
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-pill);
+  padding: 7px 14px;
+  min-height: 36px;
+  cursor: pointer;
+  transition:
+    background var(--ui-duration) var(--ui-ease),
+    border-color var(--ui-duration) var(--ui-ease);
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .ui-chip:hover:not(:disabled):not(.ui-chip--selected) {
+    background: var(--ui-surface-3);
+  }
+}
+
+.ui-chip--selected {
+  background: var(--ui-accent-soft);
+  border-color: var(--ui-accent);
+}
+
+.ui-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

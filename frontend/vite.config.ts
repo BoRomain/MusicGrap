@@ -6,8 +6,6 @@ import {fileURLToPath} from 'node:url'
 export default defineConfig(({mode}) => ({
   plugins: [react()],
   resolve: {
-    // @romain/uilib is linked from ../../UiLib: keep a single copy of React.
-    dedupe: ['react', 'react-dom'],
     alias: {
       $backend: fileURLToPath(new URL(`./src/lib/backend/${mode === 'android' ? 'android' : 'wails'}.ts`, import.meta.url)),
     },

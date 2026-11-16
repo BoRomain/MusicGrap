@@ -87,5 +87,5 @@ internal/library          scan du dossier, tags, pochettes, cache JSON
 internal/playlist         playlists (JSON)
 internal/palette          couleurs extraites des pochettes
 internal/settings         réglages persistés
-frontend/src              interface React + TypeScript (UiLib, Zustand) ; lib/backend choisit Wails ou Capacitor au build
+frontend/src              interface React + TypeScript (UiLib embarqué dans src/uilib, Zustand) ; lib/backend choisit Wails ou Capacitor au build
 ```

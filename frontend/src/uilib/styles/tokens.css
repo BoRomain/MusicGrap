@@ -1,0 +1,172 @@
+/*
+ * Design tokens. Override any --ui-* variable on :root, .ui-root or a parent element.
+ *
+ * Themes:
+ *   - dark (default): no attribute needed.
+ *   - light: data-ui-theme="light" on .ui-root (ThemeProvider theme="light") or on any ancestor (e.g. <html>).
+ *   - system: data-ui-theme="system" follows prefers-color-scheme.
+ */
+
+/* ---------- Shared (theme independent) ---------- */
+:root,
+.ui-root {
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 10px;
+  --ui-radius-lg: 14px;
+  --ui-radius-pill: 999px;
+
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-5: 20px;
+
+  --ui-font: Inter, "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ui-font-size-sm: 13px;
+  --ui-font-size-md: 15px;
+  --ui-font-size-lg: 16px;
+
+  --ui-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ui-duration: 160ms;
+}
+
+/* ---------- Dark (default) ---------- */
+:root,
+.ui-root,
+[data-ui-theme="dark"] {
+  color-scheme: dark;
+
+  --ui-accent: #8b7cf6;
+  --ui-accent-rgb: 139, 124, 246;
+  --ui-on-accent: #ffffff;
+
+  --ui-bg: #0e0e12;
+  --ui-surface: #1b1b21;
+  --ui-surface-2: #131317;
+  --ui-surface-3: #2a2a33;
+  --ui-raised: #2a2a33;
+  --ui-border: #2d2d36;
+  --ui-border-strong: #3a3a45;
+
+  --ui-text: #f3f3f6;
+  --ui-text-muted: #9b9ba8;
+  --ui-text-dim: #6c6c78;
+
+  --ui-hero-bg: #34304d;
+  --ui-hero-bg-hover: #3e3860;
+  --ui-fill: rgba(var(--ui-accent-rgb), 0.16);
+  --ui-fill-hover: rgba(var(--ui-accent-rgb), 0.26);
+  --ui-accent-soft: rgba(var(--ui-accent-rgb), 0.14);
+  --ui-focus: rgba(var(--ui-accent-rgb), 0.55);
+
+  --ui-success: #4ade80;
+  --ui-success-soft: rgba(74, 222, 128, 0.14);
+  --ui-warning: #fbbf24;
+  --ui-warning-soft: rgba(251, 191, 36, 0.14);
+  --ui-danger: #f87171;
+  --ui-danger-rgb: 248, 113, 113;
+  --ui-danger-soft: rgba(var(--ui-danger-rgb), 0.14);
+  --ui-on-danger: #ffffff;
+
+  --ui-thumb: #f4f4f6;
+  --ui-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --ui-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+
+  --ui-disc-bg: #121216;
+  --ui-disc-groove: #24242b;
+  --ui-disc-arm: #5a5a66;
+}
+
+/* ---------- Light ---------- */
+[data-ui-theme="light"],
+[data-ui-theme="light"] .ui-root:not([data-ui-theme]) {
+  color-scheme: light;
+
+  --ui-accent: #7563f0;
+  --ui-accent-rgb: 117, 99, 240;
+  --ui-on-accent: #ffffff;
+
+  --ui-bg: #f4f4f7;
+  --ui-surface: #ffffff;
+  --ui-surface-2: #f0f0f4;
+  --ui-surface-3: #e6e6ec;
+  --ui-raised: #ffffff;
+  --ui-border: #e2e2e9;
+  --ui-border-strong: #cdcdd7;
+
+  --ui-text: #16161b;
+  --ui-text-muted: #5e5e6c;
+  --ui-text-dim: #8b8b99;
+
+  --ui-hero-bg: #e8e4fd;
+  --ui-hero-bg-hover: #ddd7fb;
+  --ui-fill: rgba(var(--ui-accent-rgb), 0.14);
+  --ui-fill-hover: rgba(var(--ui-accent-rgb), 0.22);
+  --ui-accent-soft: rgba(var(--ui-accent-rgb), 0.12);
+  --ui-focus: rgba(var(--ui-accent-rgb), 0.5);
+
+  --ui-success: #16a34a;
+  --ui-success-soft: rgba(22, 163, 74, 0.12);
+  --ui-warning: #c27803;
+  --ui-warning-soft: rgba(217, 119, 6, 0.13);
+  --ui-danger: #dc2626;
+  --ui-danger-rgb: 220, 38, 38;
+  --ui-danger-soft: rgba(var(--ui-danger-rgb), 0.1);
+  --ui-on-danger: #ffffff;
+
+  --ui-thumb: #ffffff;
+  --ui-shadow-sm: 0 1px 3px rgba(20, 20, 40, 0.18), 0 0 0 0.5px rgba(20, 20, 40, 0.08);
+  --ui-shadow-lg: 0 16px 40px rgba(20, 20, 40, 0.14), 0 2px 6px rgba(20, 20, 40, 0.06);
+
+  --ui-disc-bg: #2a2a33;
+  --ui-disc-groove: #3d3d48;
+  --ui-disc-arm: #9b9ba8;
+}
+
+/* ---------- System (follows the OS preference) ---------- */
+@media (prefers-color-scheme: light) {
+  [data-ui-theme="system"],
+  [data-ui-theme="system"] .ui-root:not([data-ui-theme]) {
+    color-scheme: light;
+
+    --ui-accent: #7563f0;
+    --ui-accent-rgb: 117, 99, 240;
+    --ui-on-accent: #ffffff;
+
+    --ui-bg: #f4f4f7;
+    --ui-surface: #ffffff;
+    --ui-surface-2: #f0f0f4;
+    --ui-surface-3: #e6e6ec;
+    --ui-raised: #ffffff;
+    --ui-border: #e2e2e9;
+    --ui-border-strong: #cdcdd7;
+
+    --ui-text: #16161b;
+    --ui-text-muted: #5e5e6c;
+    --ui-text-dim: #8b8b99;
+
+    --ui-hero-bg: #e8e4fd;
+    --ui-hero-bg-hover: #ddd7fb;
+    --ui-fill: rgba(var(--ui-accent-rgb), 0.14);
+    --ui-fill-hover: rgba(var(--ui-accent-rgb), 0.22);
+    --ui-accent-soft: rgba(var(--ui-accent-rgb), 0.12);
+    --ui-focus: rgba(var(--ui-accent-rgb), 0.5);
+
+    --ui-success: #16a34a;
+    --ui-success-soft: rgba(22, 163, 74, 0.12);
+    --ui-warning: #c27803;
+    --ui-warning-soft: rgba(217, 119, 6, 0.13);
+    --ui-danger: #dc2626;
+    --ui-danger-rgb: 220, 38, 38;
+    --ui-danger-soft: rgba(var(--ui-danger-rgb), 0.1);
+    --ui-on-danger: #ffffff;
+
+    --ui-thumb: #ffffff;
+    --ui-shadow-sm: 0 1px 3px rgba(20, 20, 40, 0.18), 0 0 0 0.5px rgba(20, 20, 40, 0.08);
+    --ui-shadow-lg: 0 16px 40px rgba(20, 20, 40, 0.14), 0 2px 6px rgba(20, 20, 40, 0.06);
+
+    --ui-disc-bg: #2a2a33;
+    --ui-disc-groove: #3d3d48;
+    --ui-disc-arm: #9b9ba8;
+  }
+}

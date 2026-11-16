@@ -2,7 +2,7 @@
  * Slowed + reverb panel, built from UiLib's PlayerTemplate:
  * hero speed value, preset chips, then the reverb sliders in a card.
  */
-import { Card, ChipGroup, HeroDisplay, Slider } from '@romain/uilib'
+import { Card, ChipGroup, HeroDisplay, Slider } from '../uilib'
 import { SetReverb, SetSpeed } from '$backend'
 import { patchSettings, useApp } from './store'
 

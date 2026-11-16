@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ChipGroup } from '@romain/uilib'
+import { ChipGroup } from '../../uilib'
 import { albumKinds, albumTitle, artistName, go, kindLabel, kindPlural, playTracks, useApp, type Album, type AlbumKind } from '../store'
 import { MediaCard } from '../MediaCard'
 
