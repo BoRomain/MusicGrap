@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChipGroup } from '@romain/uilib'
+import { ChipGroup } from '../uilib'
 import { isMobile, SetEQGains, SetEQPreset } from '$backend'
 import { bandsCurve, clamp, DEFAULT_HZ, MAX_DB, pointsCurve, sample, ZONES, type Point } from './eqCurve'
 import { EqGraph } from './EqGraph'

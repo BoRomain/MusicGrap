@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '@romain/uilib/style.css'
+import './uilib'
 import './style.css'
 import { isMobile } from '$backend'
 import { App } from './App'

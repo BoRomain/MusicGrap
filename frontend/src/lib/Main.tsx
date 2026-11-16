@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Button, TextField } from '@romain/uilib'
+import { Button, TextField } from '../uilib'
 import { isMobile } from '$backend'
 import { back, chooseFolder, forward, go, scanLibrary, setDrawer, setQuery, useApp, useRoute } from './store'
 import { Icon } from './Icon'

@@ -1,0 +1,44 @@
+.ui-switch {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-surface-3);
+  cursor: pointer;
+  transition: background var(--ui-duration) var(--ui-ease);
+  flex-shrink: 0;
+}
+
+.ui-switch::before {
+  /* Bigger hit area for touch. */
+  content: "";
+  position: absolute;
+  inset: -9px -4px;
+}
+
+.ui-switch__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ui-thumb);
+  box-shadow: var(--ui-shadow-sm);
+  transition: transform var(--ui-duration) var(--ui-ease);
+}
+
+.ui-switch--on {
+  background: var(--ui-accent);
+}
+
+.ui-switch--on .ui-switch__thumb {
+  transform: translateX(20px);
+}
+
+.ui-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

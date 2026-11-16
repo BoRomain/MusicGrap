@@ -1,0 +1,22 @@
+.ui-slider {
+  min-height: 52px;
+  background: var(--ui-surface-2);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-slider .ui-track__content {
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  padding: 0 var(--ui-space-4);
+}
+
+.ui-slider__label,
+.ui-slider__value {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ui-slider__value {
+  font-variant-numeric: tabular-nums;
+}

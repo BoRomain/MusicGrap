@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { ThemeProvider } from '@romain/uilib'
+import { ThemeProvider } from './uilib'
 import { coverUrl as coverOf, EventsOn, GetInitialState, isMobile, Next, onBackButton, Prev, Seek, TogglePause } from '$backend'
 import type { audio, core, library, playlist } from '../wailsjs/go/models'
 import {

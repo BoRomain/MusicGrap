@@ -1,4 +1,4 @@
-import { Card, Slider, Switch } from '@romain/uilib'
+import { Card, Slider, Switch } from '../uilib'
 import { SetCrossfade, SetCrossfadeOnSkip } from '$backend'
 import { patchSettings, useApp } from './store'
 
