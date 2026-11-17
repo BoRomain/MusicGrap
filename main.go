@@ -8,6 +8,7 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/linux"
 )
 
 //go:embed all:frontend/dist
@@ -17,9 +18,9 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:     "Wave",
-		Width:     1200,
-		Height:    780,
+		Title:  "Wave",
+		Width:  1200,
+		Height: 780,
 		// Small enough for tiling window managers; the layout adapts down to this.
 		MinWidth:  360,
 		MinHeight: 420,
@@ -36,6 +37,12 @@ func main() {
 					next.ServeHTTP(w, r)
 				})
 			},
+		},
+		// Without Linux options Wails turns WebKitGTK's GPU acceleration off, and the
+		// blurred backdrop and panels then render on the CPU at a few frames per second.
+		Linux: &linux.Options{
+			WebviewGpuPolicy: linux.WebviewGpuPolicyAlways,
+			ProgramName:      "musicplayer",
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 32, B: 48, A: 1},
 		OnStartup:        app.startup,
