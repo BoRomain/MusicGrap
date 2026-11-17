@@ -1,10 +1,27 @@
+import { isMobile } from '$backend'
 import type { palette } from '../../wailsjs/go/models'
 
 /** Same as palette.Default on the Go side, used until the first track loads. */
 export const defaultPalette: palette.Palette = { bg1: '#1b2030', bg2: '#3a2350', accent: '#b388ff', text: '#ffffff' }
 
+/** Mixes a #rrggbb color with black: amount 0 keeps it, 1 gives black. */
+function darken(hex: string, amount: number): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return hex
+  const n = parseInt(m[1], 16)
+  const ch = (shift: number) => Math.round(((n >> shift) & 0xff) * (1 - amount)).toString(16).padStart(2, '0')
+  return `#${ch(16)}${ch(8)}${ch(0)}`
+}
+
+/** On desktop the large window makes the cover colors too loud: the backgrounds are dimmed. */
+function forDisplay(p: palette.Palette): palette.Palette {
+  if (isMobile) return p
+  return { ...p, bg1: darken(p.bg1, 0.45), bg2: darken(p.bg2, 0.45) }
+}
+
 /** Applies a cover palette; :root transitions the registered color properties. */
-export function applyPalette(p: palette.Palette) {
+export function applyPalette(raw: palette.Palette) {
+  const p = forDisplay(raw)
   const root = document.documentElement.style
   root.setProperty('--bg1', p.bg1)
   root.setProperty('--bg2', p.bg2)
@@ -13,7 +30,8 @@ export function applyPalette(p: palette.Palette) {
 }
 
 /** Props of the UiLib ThemeProvider for a cover palette: accent plus the --ui-* tokens. */
-export function uiTheme(p: palette.Palette): { accent: string; tokens: Record<string, string> } {
+export function uiTheme(raw: palette.Palette): { accent: string; tokens: Record<string, string> } {
+  const p = forDisplay(raw)
   return {
     accent: p.accent,
     tokens: {
